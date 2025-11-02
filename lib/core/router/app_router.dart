@@ -6,6 +6,7 @@ import '../../features/onboarding/screens/onboarding_complete_screen.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/log/screens/log_screen.dart';
 import '../../features/mypage/screens/mypage_screen.dart';
+import '../../features/search/screens/search_screen.dart';
 
 /// 앱 라우터 설정
 final appRouter = GoRouter(
@@ -65,6 +66,11 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/mypage',
           pageBuilder: (context, state) => const NoTransitionPage(child: MyPageScreen()),
+        ),
+        // 검색 화면 (하단바 포함)
+        GoRoute(
+          path: '/search',
+          builder: (context, state) => const SearchScreen(),
         ),
       ],
     ),
