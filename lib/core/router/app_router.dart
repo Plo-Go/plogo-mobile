@@ -2,19 +2,31 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:plogo/layout/main_layout.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
+import '../../features/onboarding/screens/splash_screen.dart';
 import '../../features/onboarding/screens/onboarding_complete_screen.dart';
 import '../../features/home/screens/home_screen.dart';
 import '../../features/log/screens/log_screen.dart';
 import '../../features/mypage/screens/mypage_screen.dart';
 import '../../features/search/screens/search_screen.dart';
+import '../../features/auth/screens/login_screen.dart';
 
 /// 앱 라우터 설정
 final appRouter = GoRouter(
-  initialLocation: '/',
+  initialLocation: '/splash',
   routes: [
+    // 스플래시 (하단바 없음)
+    GoRoute(
+      path: '/splash',
+      builder: (context, state) => const SplashScreen(),
+    ),
+    // 로그인 (하단바 없음)
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+    ),
     // 온보딩 (하단바 없음)
     GoRoute(
-      path: '/',
+      path: '/onboarding',
       builder: (context, state) => const OnboardingScreen(),
     ),
     GoRoute(
