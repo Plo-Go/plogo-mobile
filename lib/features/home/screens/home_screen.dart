@@ -14,7 +14,7 @@ class HomeScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -48,10 +48,11 @@ class HomeScreen extends StatelessWidget {
                           Expanded(
                             child: TextField(
                               textAlignVertical: TextAlignVertical.center,
-                              decoration: InputDecoration(
+                              maxLines: 1,
+                              decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 isDense: true,
-                                contentPadding: EdgeInsets.zero,
+                                contentPadding: EdgeInsets.symmetric(vertical: 18),
                                 hintText: '코스를 검색해 보세요!',
                                 hintStyle: TextStyle(
                                   color: AppColors.grey,
@@ -67,7 +68,7 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 28),
+              const SizedBox(height: 20),
 
               // 나를 위한 코스 추천
               const Text(
