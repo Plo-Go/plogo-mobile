@@ -3,7 +3,12 @@ import 'package:plogo/shared/theme/app_colors.dart';
 import 'course_card.dart';
 
 class RecentViewedCoursesSection extends StatelessWidget {
-  const RecentViewedCoursesSection({super.key});
+  final List<Map<String, String>> items; // [{name, location, imagePath}]
+
+  const RecentViewedCoursesSection({
+    super.key,
+    this.items = const [],
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,20 +26,37 @@ class RecentViewedCoursesSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 160,
-          child: ListView.separated(
-            padding: const EdgeInsets.only(left: 24),
-            scrollDirection: Axis.horizontal,
-            itemCount: 3,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (_, i) => const CourseCard(
-              name: '문경새재 도립공원',
-              location: '경상북도 | 공원',
-              imagePath: 'assets/images/sample.png',
+        if (items.isEmpty)
+          Container(
+            height: 128,
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            alignment: Alignment.center,
+            child: Text(
+              '최근 확인한 코스가 없습니다.',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+            ),
+          )
+        else
+          SizedBox(
+            height: 128,
+            child: ListView.separated(
+              padding: const EdgeInsets.only(left: 24),
+              scrollDirection: Axis.horizontal,
+              itemCount: items.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (_, i) {
+                final item = items[i];
+                return CourseCard(
+                  name: item['name'] ?? '이름',
+                  location: item['location'] ?? '위치',
+                  imagePath: item['imagePath'] ?? 'assets/images/sample.png',
+                );
+              },
             ),
           ),
-        ),
       ],
     );
   }

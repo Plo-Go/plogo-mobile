@@ -16,8 +16,8 @@ class CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 160,
-      height: 160,
+      width: 128,
+      height: 128,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: AppColors.greyLight,

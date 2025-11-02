@@ -39,12 +39,12 @@ class MyPageScreen extends StatelessWidget {
 						level: 1,
 						levelLabel: '새싹 플로거',
 					),
-					const SizedBox(height: 16),
+					const SizedBox(height: 36),
 					Container(
-                width: MediaQuery.of(context).size.width,
-                height: 8,
-                color: AppColors.greyLight,
-              ),
+                        width: MediaQuery.of(context).size.width,
+                        height: 8,
+                        color: AppColors.greyLight,
+                    ),
 					const SizedBox(height: 16),
 
 					// 저장 목록 섹션
@@ -52,42 +52,59 @@ class MyPageScreen extends StatelessWidget {
 						items: saved,
 						onSeeAll: () {},
 					),
-					const SizedBox(height: 24),
+					const SizedBox(height: 32),
 
 					// 최근 확인한 코스 섹션 (검색 화면의 섹션 재사용)
-					const RecentViewedCoursesSection(),
-					const SizedBox(height: 24),
-
-										Container(
-                width: MediaQuery.of(context).size.width,
-                height: 8,
-                color: AppColors.greyLight,
-              ),
+					const RecentViewedCoursesSection(
+						items: [], // 빈 리스트로 테스트, 추후 실제 데이터 연동
+					),
+					const SizedBox(height: 20),
+					Container(
+						width: MediaQuery.of(context).size.width,
+						height: 8,
+						color: AppColors.greyLight,
+					),
 					const SizedBox(height: 8),
 
 					// 설정 영역
 					Padding(
 						padding: const EdgeInsets.symmetric(horizontal: 24),
-						child: Column(
-							children: [
-								ListTile(
-									contentPadding: EdgeInsets.zero,
-									title: const Text('선호도 재설정'),
-									onTap: () {
-										// TODO: 온보딩 선호도 질문으로 이동
-									},
-								),
-								ListTile(
-									contentPadding: EdgeInsets.zero,
-									title: const Text('로그아웃'),
-									onTap: () {
-										// TODO: 로그아웃 처리
-									},
-								),
-							],
+						child: ListTileTheme(
+							data: const ListTileThemeData(
+								dense: true,
+								minVerticalPadding: 0,
+								horizontalTitleGap: 0,
+							),
+							child: Column(
+								children: [
+                                    const SizedBox(height: 6),
+									ListTile(
+										contentPadding: EdgeInsets.zero,
+										visualDensity: const VisualDensity(horizontal: -2, vertical: -4),
+										title: const Text(
+											'선호도 재설정',
+											style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+										),
+										onTap: () {
+											// TODO: 온보딩 선호도 질문으로 이동
+										},
+									),
+									const SizedBox(height: 6),
+									ListTile(
+										contentPadding: EdgeInsets.zero,
+										visualDensity: const VisualDensity(horizontal: -2, vertical: -4),
+										title: const Text(
+											'로그아웃',
+											style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.grey),
+										),
+										onTap: () {
+											// TODO: 로그아웃 처리
+										},
+									),
+								],
+							),
 						),
 					),
-					const SizedBox(height: 24),
 				],
 			),
 		);
