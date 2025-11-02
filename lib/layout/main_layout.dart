@@ -31,7 +31,7 @@ class MainLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.only(top: 48),
+        padding: const EdgeInsets.only(top: 12),
         child: child,
       ),
       bottomNavigationBar: SizedBox(

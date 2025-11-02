@@ -27,7 +27,7 @@ class _LogScreenState extends State<LogScreen> {
     await controller.setLevel(12); // 줌 레벨 설정
     // 초기 중심/레벨 재적용하여 타일 렌더 강제 트리거
     await controller.setCenter(LatLng(36.3, 127.8));
-    // 약간의 지연 후 한 번 더 적용 (WebView에서 레이아웃 직후 렌더 안정화용)
+    // 약간의 지연 후 마커 추가 (하드코딩된 확인용 마커)
     Future.delayed(const Duration(milliseconds: 150), () {
       if (mounted) setState(() => _mapReady = true);
     });
