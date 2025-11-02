@@ -214,7 +214,7 @@ class HomeScreen extends StatelessWidget {
                       spacing: 8,
                       runSpacing: 8,
                       children: const [
-                        _RegionButton(label: '전체'),
+                        _RegionButton(label: '전체', trailingAsset: 'assets/images/arrow.png'),
                   _RegionButton(label: '서울'),
                   _RegionButton(label: '인천'),
                   _RegionButton(label: '부산'),
@@ -243,12 +243,14 @@ class HomeScreen extends StatelessWidget {
 
 class _RegionButton extends StatelessWidget {
   final String label;
-  const _RegionButton({required this.label});
+  final String? trailingAsset;
+  const _RegionButton({required this.label, this.trailingAsset});
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: (MediaQuery.of(context).size.width - 60) / 3, // 3열 맞춤
+      height: 44,
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
@@ -260,11 +262,37 @@ class _RegionButton extends StatelessWidget {
           ),
           padding: const EdgeInsets.symmetric(vertical: 12),
         ),
-        child: Text(
-          label,
-          style: const TextStyle(
-            color: AppColors.black,
-            fontWeight: FontWeight.w500,
+        child: Center(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppColors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (trailingAsset != null) ...[
+                const SizedBox(width: 4),
+                  // 텍스트 베이스라인 대비 아이콘이 살짝 위로 보이는 현상을 보정
+                  Transform.translate(
+                    offset: const Offset(0, 1), // 필요 시 0~2 사이로 미세 조정
+                    child: Image.asset(
+                      'assets/icons/arrow.png',
+                      width: 9,
+                      height: 9,
+                      fit: BoxFit.contain,
+                      // 에셋이 없을 경우 기본 아이콘으로 대체
+                      errorBuilder: (context, error, stackTrace) => const Icon(
+                        Icons.chevron_right,
+                        size: 16,
+                        color: AppColors.black,
+                      ),
+                    ),
+                  ),
+              ],
+            ],
           ),
         ),
       ),
