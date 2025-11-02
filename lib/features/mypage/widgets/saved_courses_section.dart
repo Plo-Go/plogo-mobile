@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
-import 'package:plogo/features/search/widgets/course_card.dart';
+import 'package:plogo/shared/widgets/course_card.dart';
 
 class SavedCoursesSection extends StatelessWidget {
   final VoidCallback? onSeeAll;
