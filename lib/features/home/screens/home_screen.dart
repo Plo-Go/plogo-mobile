@@ -1,192 +1,138 @@
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:plogo/shared/widgets/top_bar.dart';
+import 'package:plogo/features/home/widgets/course_section.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // 섹션별 아이템 목록 (임시 더미 데이터)
+    final recommendedItems = <Map<String, String>>[
+      {
+        'name': '문정새싹 둔촌코스',
+        'location': '서울 송파구',
+        'imagePath': 'assets/images/sample.png',
+      },
+      {
+        'name': '반포 한강공원',
+        'location': '서울 서초구',
+        'imagePath': 'assets/images/sample.png',
+      },
+      {
+        'name': '여의도 샛강 둘레',
+        'location': '서울 영등포구',
+        'imagePath': 'assets/images/sample.png',
+      },
+      {
+        'name': '올림픽공원 순환',
+        'location': '서울 송파구',
+        'imagePath': 'assets/images/sample.png',
+      },
+    ];
+
+    final hotItems = <Map<String, String>>[
+      {
+        'name': '성수 리버뷰 코스',
+        'location': '서울 성동구',
+        'imagePath': 'assets/images/sample.png',
+      },
+      {
+        'name': '북서울 꿈의숲',
+        'location': '서울 강북구',
+        'imagePath': 'assets/images/sample.png',
+      },
+      {
+        'name': '한강시민공원 동작',
+        'location': '서울 동작구',
+        'imagePath': 'assets/images/sample.png',
+      },
+      {
+        'name': '남산 타워링',
+        'location': '서울 중구',
+        'imagePath': 'assets/images/sample.png',
+      },
+    ];
+
     return Scaffold(
-  backgroundColor: AppColors.white,
+      backgroundColor: AppColors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        child: Column(
+          children: [
+            // 고정된 상단 TopBar
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: TopBar(),
+            ),
+            // 스크롤 가능한 콘텐츠
+            Expanded(
+              child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-              // 상단 로고 + 검색창
-              const TopBar(),
-              const SizedBox(height: 20),
-              // 나를 위한 코스 추천
-              const Text(
-                '나를 위한 코스 추천',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 4),
-              const Text(
-                '선호도 기반으로 추천드리는 코스들이에요',
-                style: TextStyle(fontSize: 14, color: Colors.grey),
-              ),
-              const SizedBox(height: 12),
-                  ],
-                ),
-              ),
-
-              SizedBox(
-                height: 150,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 4,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (_, i) => Container(
-                    width: 140,
-                    decoration: BoxDecoration(
+                    const SizedBox(height: 20),
+                    CourseSection(
+                      title: '나를 위한 코스 추천',
+                      subtitle: '선호도 기반으로 추천드리는 코스들이에요',
+                      items: recommendedItems,
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 8,
                       color: AppColors.greyLight,
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    clipBehavior: Clip.hardEdge,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 90,
-                          width: double.infinity,
-                          color: AppColors.border,
-                          child: const Icon(Icons.image, size: 40),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            '문정새싹 둔촌코스',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 20),
+                    CourseSection(
+                      title: '요즘 핫한 코스 추천',
+                      subtitle: '최근 사용자들 사이에서 인기가 많아요',
+                      items: hotItems,
                     ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 8,
-                color: AppColors.greyLight,
-              ),
-              const SizedBox(height: 20),
-
-              // 요즘 핫한 코스 추천
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '요즘 핫한 코스 추천',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      '최근 사용자들 사이에서 인기가 많아요',
-                      style: TextStyle(fontSize: 14, color: AppColors.grey),
-                    ),
-                    const SizedBox(height: 12),
-                  ],
-                ),
-              ),
-
-              SizedBox(
-                height: 150,
-                child: ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 4,
-                  separatorBuilder: (_, __) => const SizedBox(width: 12),
-                  itemBuilder: (_, i) => Container(
-                    width: 140,
-                    decoration: BoxDecoration(
+                    const SizedBox(height: 20),
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: 8,
                       color: AppColors.greyLight,
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    clipBehavior: Clip.hardEdge,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          height: 90,
-                          width: double.infinity,
-                          color: AppColors.border,
-                          child: const Icon(Icons.image, size: 40),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text(
-                            '성수 리버뷰 코스',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
+                    const SizedBox(height: 20),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            '지역별 코스 찾기',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 12),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: const [
+                              _RegionButton(label: '전체', trailingAsset: 'assets/images/arrow.png'),
+                              _RegionButton(label: '서울'),
+                              _RegionButton(label: '인천'),
+                              _RegionButton(label: '부산'),
+                              _RegionButton(label: '대구'),
+                              _RegionButton(label: '광주'),
+                              _RegionButton(label: '울산'),
+                              _RegionButton(label: '세종'),
+                              _RegionButton(label: '경기도'),
+                              _RegionButton(label: '강원도'),
+                              _RegionButton(label: '충청도'),
+                              _RegionButton(label: '전라도'),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 20),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 8,
-                color: AppColors.greyLight,
-              ),
-              const SizedBox(height: 20),
-
-              // 지역별 코스 찾기
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      '지역별 코스 찾기',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 12),
-
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: const [
-                        _RegionButton(label: '전체', trailingAsset: 'assets/images/arrow.png'),
-                  _RegionButton(label: '서울'),
-                  _RegionButton(label: '인천'),
-                  _RegionButton(label: '부산'),
-                  _RegionButton(label: '대구'),
-                  _RegionButton(label: '광주'),
-                  _RegionButton(label: '울산'),
-                  _RegionButton(label: '세종'),
-                  _RegionButton(label: '경기도'),
-                  _RegionButton(label: '강원도'),
-                  _RegionButton(label: '충청도'),
-                        _RegionButton(label: '전라도'),
-                      ],
-                    ),
-
-                    const SizedBox(height: 60),
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -201,14 +147,14 @@ class _RegionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: (MediaQuery.of(context).size.width - 60) / 3, // 3열 맞춤
+      width: (MediaQuery.of(context).size.width - 64) / 3, // 24+24 padding + 2*8 gaps
       height: 44,
       child: ElevatedButton(
         onPressed: () {},
         style: ElevatedButton.styleFrom(
           elevation: 0,
           backgroundColor: AppColors.white,
-          side: BorderSide(color: AppColors.greyLight), // 테두리 색상을 greyLight로 변경
+          side: BorderSide(color: AppColors.greyLight),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -227,22 +173,21 @@ class _RegionButton extends StatelessWidget {
               ),
               if (trailingAsset != null) ...[
                 const SizedBox(width: 4),
-                  // 텍스트 베이스라인 대비 아이콘이 살짝 위로 보이는 현상을 보정
-                  Transform.translate(
-                    offset: const Offset(0, 1), // 필요 시 0~2 사이로 미세 조정
-                    child: Image.asset(
-                      'assets/icons/arrow.png',
-                      width: 9,
-                      height: 9,
-                      fit: BoxFit.contain,
-                      // 에셋이 없을 경우 기본 아이콘으로 대체
-                      errorBuilder: (context, error, stackTrace) => const Icon(
-                        Icons.chevron_right,
-                        size: 16,
-                        color: AppColors.black,
-                      ),
+                // 텍스트 베이스라인 대비 아이콘이 살짝 위로 보이는 현상을 보정
+                Transform.translate(
+                  offset: const Offset(0, 1),
+                  child: Image.asset(
+                    'assets/icons/arrow.png',
+                    width: 9,
+                    height: 9,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) => const Icon(
+                      Icons.chevron_right,
+                      size: 16,
+                      color: AppColors.black,
                     ),
                   ),
+                ),
               ],
             ],
           ),

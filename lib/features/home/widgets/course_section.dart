@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:plogo/shared/widgets/course_card.dart';
+import 'package:plogo/shared/theme/app_colors.dart';
 
-class RecentViewedCoursesSection extends StatelessWidget {
+class CourseSection extends StatelessWidget {
+  final String title;
+  final String? subtitle;
   final List<Map<String, String>> items; // [{name, location, imagePath}]
 
-  const RecentViewedCoursesSection({
+  const CourseSection({
     super.key,
+    required this.title,
+    this.subtitle,
     this.items = const [],
   });
 
@@ -15,35 +19,41 @@ class RecentViewedCoursesSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 24),
-          child: Text(
-            '최근 확인한 코스',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              if (subtitle != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  subtitle!,
+                  style: const TextStyle(fontSize: 14, color: AppColors.grey),
+                ),
+              ],
+              const SizedBox(height: 16),
+            ],
           ),
         ),
-        const SizedBox(height: 16),
         if (items.isEmpty)
           Container(
             height: 128,
             padding: const EdgeInsets.symmetric(horizontal: 24),
             alignment: Alignment.center,
-            child: Text(
-              '최근 확인한 코스가 없습니다.',
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
+            child: const Text(
+              '표시할 코스가 없습니다.',
+              style: TextStyle(color: AppColors.grey, fontSize: 14),
             ),
           )
         else
           SizedBox(
             height: 128,
             child: ListView.separated(
-              padding: const EdgeInsets.only(left: 24),
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
               separatorBuilder: (_, __) => const SizedBox(width: 12),
