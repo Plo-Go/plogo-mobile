@@ -35,73 +35,68 @@ class _OnboardingCompleteScreenState extends State<OnboardingCompleteScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        // OnboardingScreen과 동일: 첫 화면만 back 숨겼던 톤을 이어가되,
-        // 완료 화면은 뒤로 갈 일 없으니 기본 백 버튼 제거
-        automaticallyImplyLeading: false,
-        elevation: 0,
-        backgroundColor: Colors.white,
-      ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 140, 24, 40),
+        padding: const EdgeInsets.fromLTRB(24, 238, 24, 40),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (isLoading) ...[
-              const Text(
-                'ㅇㅇ님께서 좋아하실 만한\n플로깅 코스를 찾고 있어요.',
-                textAlign: TextAlign.start,
-                style: TextStyle(fontSize: 24),
-              ),
-              const SizedBox(height: 88),
-              const Center(child: LineSpinner(
-                size: 60,
-                lineCount: 16,
-                lineLength: 8,
-                lineWidth: 5,
-                duration: const Duration(milliseconds: 1600),
-              ),),
-            ] else ...[
-              const Text(
-                '선택하신 테마를 바탕으로\n플로깅 코스를 추천해드릴게요.',
-                textAlign: TextAlign.start,
-                style: TextStyle(fontSize: 24),
-              ),
-              const SizedBox(height: 88),
-              Center(
-                child: Image.asset(
-                  'assets/images/completed.png',
-                  width: 80,
-                  height: 80,
-                  fit: BoxFit.contain,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (isLoading) ...[
+                  const Text(
+                    'ㅇㅇ님께서 좋아하실 만한\n플로깅 코스를 찾고 있어요.',
+                    textAlign: TextAlign.start,
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(height: 88),
+                  const Center(
+                    child: LineSpinner(
+                      size: 60,
+                      lineCount: 16,
+                      lineLength: 8,
+                      lineWidth: 5,
+                      duration: Duration(milliseconds: 1600),
+                    ),
+                  ),
+                ] else ...[
+                  const Text(
+                    '선택하신 테마를 바탕으로\n플로깅 코스를 추천해드릴게요.',
+                    textAlign: TextAlign.start,
+                    style: TextStyle(fontSize: 24),
+                  ),
+                  const SizedBox(height: 88),
+                  Center(
+                    child: Image.asset(
+                      'assets/images/completed.png',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ],
+                const Spacer(),
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: isLoading
+                        ? null
+                        : () {
+                            context.go('/home');
+                          },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      backgroundColor:
+                          isLoading ? AppColors.grey : AppColors.primary,
+                    ),
+                    child: const Text(
+                      '시작하기',
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
+                  ),
                 ),
-              ),
-            ],
-            const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: isLoading
-                    ? null
-                    : () {
-                        context.go('/home');
-                      },
-                style: ElevatedButton.styleFrom(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)),
-                  backgroundColor:
-                      isLoading ? AppColors.grey : AppColors.primary,
-                ),
-                child: Text(
-                  isLoading ? '시작하기' : '시작하기',
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                ),
-              ),
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 }

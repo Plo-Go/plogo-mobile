@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:plogo/shared/theme/app_colors.dart';
+import 'package:plogo/shared/widgets/app_bottom_nav_bar.dart';
 
 /// 앱 전역 하단바 레이아웃
 /// - 온보딩 이외의 화면에서 사용 (GoRouter ShellRoute에서 감쌈)
@@ -30,111 +30,19 @@ class MainLayout extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: child,
+      body: Padding(
+        padding: const EdgeInsets.only(top: 48),
+        child: child,
+      ),
       bottomNavigationBar: SizedBox(
         height: barHeight,
-        child: BottomNavigationBar(
+        child: AppBottomNavBar(
           currentIndex: currentIndex,
           onTap: onTap,
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: AppColors.white,
-          elevation: 8,
-          selectedItemColor: AppColors.black,
-          unselectedItemColor: AppColors.grey,
-          showSelectedLabels: true,
-          showUnselectedLabels: true,
-          selectedLabelStyle: TextStyle(fontSize: selectedFontSize, fontWeight: FontWeight.w600),
-          unselectedLabelStyle: TextStyle(fontSize: unselectedFontSize, fontWeight: FontWeight.w400),
-          items: [
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: EdgeInsets.only(bottom: iconLabelGap),
-                child: SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: Image.asset(
-                    'assets/icons/homeIcon.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              activeIcon: Padding(
-                padding: EdgeInsets.only(bottom: iconLabelGap),
-                child: SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: Image.asset(
-                    'assets/icons/homeIcon_filled.png',
-                    fit: BoxFit.contain,
-                    // 채워진 아이콘이 없다면 기본 아이콘을 그대로 사용
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
-                      'assets/icons/homeIcon.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ),
-              label: '홈',
-            ),
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: EdgeInsets.only(bottom: iconLabelGap),
-                child: SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: Image.asset(
-                    'assets/icons/mapIcon.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              activeIcon: Padding(
-                padding: EdgeInsets.only(bottom: iconLabelGap),
-                child: SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: Image.asset(
-                    'assets/icons/mapIcon_filled.png',
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
-                      'assets/icons/mapIcon.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ),
-              label: '로그',
-            ),
-            BottomNavigationBarItem(
-              icon: Padding(
-                padding: EdgeInsets.only(bottom: iconLabelGap),
-                child: SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: Image.asset(
-                    'assets/icons/myIcon.png',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              activeIcon: Padding(
-                padding: EdgeInsets.only(bottom: iconLabelGap),
-                child: SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child: Image.asset(
-                    'assets/icons/myIcon_filled.png',
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) => Image.asset(
-                      'assets/icons/myIcon.png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              ),
-              label: '마이',
-            ),
-          ],
+          iconSize: iconSize,
+          iconLabelGap: iconLabelGap,
+          selectedFontSize: selectedFontSize,
+          unselectedFontSize: unselectedFontSize,
         ),
       ),
     );

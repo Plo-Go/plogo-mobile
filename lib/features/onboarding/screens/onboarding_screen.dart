@@ -22,23 +22,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final stepSelections = selected[currentStep];
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: currentStep > 0,  // 첫 화면만 back 버튼 숨김
-        elevation: 0,
-        backgroundColor: Colors.white,
-        leading: currentStep > 0
-            ? IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-          onPressed: () {
-            setState(() {
-              currentStep--;
-            });
-          },
-        )
-            : null,
-      ),
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 40, 24, 40),
+        padding: const EdgeInsets.only(top: 48),
+        child: Column(
+          children: [
+            if (currentStep > 0)
+              Container(
+                height: 56,
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.only(left: 8),
+                child: IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+                  onPressed: () {
+                    setState(() {
+                      currentStep--;
+                    });
+                  },
+                ),
+              )
+            else
+              const SizedBox(height: 56),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 40, 24, 40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -100,6 +106,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: Text(
                   currentStep == OnboardingNotifier.steps.length - 1 ? '완료' : '다음',
                   style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+            ),
+                  ],
                 ),
               ),
             ),

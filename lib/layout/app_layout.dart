@@ -8,11 +8,13 @@ class AppLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-          child: child,
+      body: Padding(
+        padding: const EdgeInsets.only(
+          left: 24,
+          right: 24,
+          bottom: 24,
         ),
+        child: child,
       ),
     );
   }
