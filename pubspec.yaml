@@ -42,6 +42,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_riverpod: ^3.0.3
   riverpod_annotation: ^3.0.3
+  kakao_map_plugin: ^0.3.7
 
 dev_dependencies:
   flutter_test:
