@@ -10,6 +10,9 @@
 .svn/
 migrate_working_dir/
 
+# Environment variables (보안 키 보호)
+.env
+
 # IntelliJ related
 *.iml
 *.ipr
