@@ -13,21 +13,61 @@ class _LogScreenState extends State<LogScreen> {
   KakaoMapController? mapController;
   bool _mapLoadFailed = false;
   bool _mapReady = false;
+  String? _markerImageDataUri;
 
-  final List<Marker> _markers = [
-    Marker(
+  static final LatLng _centerPosition = LatLng(36.5, 127.5);
+  static final LatLng _markerPosition = LatLng(37.5665, 126.9780); // 서울
+
+  List<Marker> get _markers {
+    // 커스텀 이미지가 로드되면 적용, 아니면 기본 마커
+    final marker = Marker(
       markerId: 'plogging_course_1',
-      latLng: LatLng(36.3, 127.8),
+      latLng: _markerPosition,
       infoWindowContent: '플로깅 코스 A',
-    ),
-  ];
+      width: 24,
+      height: 24,
+    );
+    
+    // Base64 이미지가 준비되면 커스텀 이미지 적용
+    if (_markerImageDataUri != null) {
+      return [
+        Marker(
+          markerId: marker.markerId,
+          latLng: marker.latLng,
+          infoWindowContent: marker.infoWindowContent,
+          markerImageSrc: _markerImageDataUri!,
+          width: marker.width,
+          height: marker.height,
+        ),
+      ];
+    }
+    
+    return [marker]; // 기본 마커
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMarkerImage();
+  }
+
+  /// 마커 이미지 URL 설정
+  Future<void> _loadMarkerImage() async {
+    // kakao_map_plugin은 웹 URL만 지원 (Base64 data URI 불가)
+    const markerUrl = 'https://raw.githubusercontent.com/Plo-Go/plogo-mobile/develop/assets/icons/flag_filled.png';
+    
+    setState(() {
+      _markerImageDataUri = markerUrl;
+    });
+    
+    debugPrint('커스텀 마커 URL 설정: $markerUrl');
+  }
 
   void _onMapCreated(KakaoMapController controller) async {
     mapController = controller;
-    await controller.setLevel(12); // 줌 레벨 설정
-    // 초기 중심/레벨 재적용하여 타일 렌더 강제 트리거
-    await controller.setCenter(LatLng(36.3, 127.8));
-    // 약간의 지연 후 마커 추가 (하드코딩된 확인용 마커)
+    await controller.setLevel(12);
+    await controller.setCenter(_centerPosition);
+    // 약간의 지연 후 상태 업데이트
     Future.delayed(const Duration(milliseconds: 150), () {
       if (mounted) setState(() => _mapReady = true);
     });
@@ -62,15 +102,13 @@ class _LogScreenState extends State<LogScreen> {
     try {
       return LayoutBuilder(
         builder: (context, constraints) {
-          // KakaoMap이 WebView 기반이라 컨테이너의 명확한 크기가 필요할 수 있음
           return SizedBox(
             width: constraints.maxWidth,
             height: constraints.maxHeight,
             child: KakaoMap(
               onMapCreated: _onMapCreated,
-              center: LatLng(37.5665, 126.9780), // 중심 좌표 (서울시청)
-              markers: _markers, // 여기서 항상 현재 상태의 마커 렌더링
-              // 현재 시그니처: (markerId, LatLng, int)
+              center: _centerPosition,
+              markers: _markers,
               onMarkerTap: (String markerId, LatLng latLng, int index) {
                 showModalBottomSheet(
                   context: context,
