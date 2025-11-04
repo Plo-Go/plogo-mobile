@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- 개발용: 모든 cleartext(http) 트래픽 허용 -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+
+    <!-- Kakao Maps JS SDK에서 사용하는 주요 도메인 명시 -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">t1.daumcdn.net</domain>
+        <domain includeSubdomains="true">map.daumcdn.net</domain>
+        <domain includeSubdomains="true">dmaps.daum.net</domain>
+        <domain includeSubdomains="true">dapi.kakao.com</domain>
+        <domain includeSubdomains="true">s1.daumcdn.net</domain>
+    </domain-config>
+</network-security-config>

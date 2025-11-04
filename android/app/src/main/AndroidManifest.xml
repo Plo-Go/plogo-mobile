@@ -1,9 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 인터넷 접근 권한 (WebView에서 외부 스크립트 로딩에 필요) -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Kakao JS SDK가 http://t1.daumcdn.net 리소스를 로드하므로 cleartext 허용 필요 (개발 단계) -->
     <application
         android:label="plogo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:enableOnBackInvokedCallback="true">
+        android:enableOnBackInvokedCallback="true"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config">
         <activity
             android:name=".MainActivity"
             android:exported="true"

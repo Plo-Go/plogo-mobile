@@ -32,7 +32,7 @@ class MyPageScreen extends StatelessWidget {
 			child: Column(
 				crossAxisAlignment: CrossAxisAlignment.start,
 				children: [
-					const SizedBox(height: 16),
+					const SizedBox(height: 48),
 					// 상단 프로필 영역
 					const ProfileHeader(
 						nickname: '닉네임',
