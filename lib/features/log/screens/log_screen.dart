@@ -54,7 +54,7 @@ class _LogScreenState extends State<LogScreen> {
   /// 마커 이미지 URL 설정
   Future<void> _loadMarkerImage() async {
     // kakao_map_plugin은 웹 URL만 지원 (Base64 data URI 불가)
-    const markerUrl = 'https://raw.githubusercontent.com/Plo-Go/plogo-mobile/develop/assets/icons/flag_filled.png';
+    const markerUrl = 'https://raw.githubusercontent.com/Plo-Go/plogo-mobile/develop/assets/icons/marker.png';
     
     setState(() {
       _markerImageDataUri = markerUrl;
