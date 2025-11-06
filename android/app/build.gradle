@@ -12,6 +12,15 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+// .env 파일에서 카카오 키 읽기
+def envProperties = new Properties()
+def envPropertiesFile = rootProject.file('../.env')
+if (envPropertiesFile.exists()) {
+    envPropertiesFile.withReader('UTF-8') { reader ->
+        envProperties.load(reader)
+    }
+}
+
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
     flutterVersionCode = '1'
@@ -49,6 +58,12 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+        
+        // 카카오 키를 Manifest Placeholder로 설정
+        manifestPlaceholders = [
+            KAKAO_NATIVE_APP_KEY: envProperties.getProperty('KAKAO_NATIVE_APP_KEY', ''),
+            applicationName: "android.app.Application"
+        ]
     }
 
     buildTypes {
