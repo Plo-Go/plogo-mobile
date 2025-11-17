@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:plogo/features/auth/services/token_storage.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -14,11 +15,17 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    // 간단한 지연 후 온보딩으로 이동 (차후 로그인 상태에 따라 분기 가능)
-    Timer(const Duration(milliseconds: 1200), () {
+    // 1.5초 후 토큰 조회 및 분기
+    Timer(const Duration(milliseconds: 1500), () async {
       if (!mounted) return;
-      // TODO: 로그인 상태에 따라 홈/온보딩 분기
-      context.go('/login');
+      final accessToken = await TokenStorage.getAccessToken();
+      if (accessToken != null && accessToken.isNotEmpty) {
+        // 로그인 상태: 홈으로 이동
+        context.go('/home');
+      } else {
+        // 비로그인: 로그인 화면으로 이동
+        context.go('/login');
+      }
     });
   }
 

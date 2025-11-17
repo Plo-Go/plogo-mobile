@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:dio/dio.dart';
 import '../data/models/onboarding_step.dart';
 
 class OnboardingNotifier extends Notifier<List<List<String>>> {
@@ -49,9 +50,29 @@ class OnboardingNotifier extends Notifier<List<List<String>>> {
     state = newState;
   }
 
-  void submit() {
-    debugPrint('Selected: $state');
+  Future<bool> submit(Dio dio) async {
+    final body = toApiRequestBody();
+    try {
+      final response = await dio.post('/course/analyze', data: body);
+      final isSuccess = response.data['isSuccess'] == true;
+      debugPrint('[선호도 저장 API] 응답: ${response.data}');
+      debugPrint('[선호도 저장 API] isSuccess: $isSuccess');
+      debugPrint('[선호도 저장 API] code: ${response.data['code']}');
+      debugPrint('[선호도 저장 API] message: ${response.data['message']}');
+      return isSuccess;
+    } catch (e) {
+      debugPrint('[선호도 저장 API] 오류: $e');
+      return false;
+    }
   }
+
+    Map<String, List<String>> toApiRequestBody() {
+      return {
+        "firstKeyword": state[0],
+        "secondKeyword": state[1],
+        "thirdKeyword": state[2],
+      };
+    }
 }
 
 final onboardingProvider = NotifierProvider<OnboardingNotifier, List<List<String>>>(

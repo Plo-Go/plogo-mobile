@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'api_exceptions.dart';
+import '../../features/auth/services/token_storage.dart';
 
 /// API 인터셉터
 /// - 요청/응답 로깅
@@ -8,11 +9,18 @@ import 'api_exceptions.dart';
 /// - 에러 처리
 class ApiInterceptor extends Interceptor {
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) {
-    // 여기에 인증 토큰 추가 등을 구현할 수 있습니다
-    // final token = tokenStorage.getToken();
-    // options.headers['Authorization'] = 'Bearer $token';
-    
+  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+    // JWT 토큰을 헤더에 자동 추가
+    try {
+      // TokenStorage import 필요
+      // import '../../features/auth/services/token_storage.dart';
+      final token = await TokenStorage.getAccessToken();
+      if (token != null && token.isNotEmpty) {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
+    } catch (e) {
+      // 토큰 가져오기 실패 시 무시
+    }
     // 디버그용 로깅 (프로덕션에서는 제거하거나 로거 사용)
     if (kDebugMode) {
       // print('REQUEST[${options.method}] => PATH: ${options.path}');

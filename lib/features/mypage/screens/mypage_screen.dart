@@ -3,6 +3,10 @@ import 'package:plogo/features/mypage/widgets/profile_header.dart';
 import 'package:plogo/features/mypage/widgets/saved_courses_section.dart';
 import 'package:plogo/features/search/widgets/recent_viewed_courses_section.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
+import 'package:plogo/features/auth/services/token_storage.dart';
+import 'package:plogo/features/mypage/services/mypage_service.dart';
+import 'package:plogo/core/api/api_client.dart';
+import 'package:go_router/go_router.dart';
 
 class MyPageScreen extends StatelessWidget {
 	const MyPageScreen({super.key});
@@ -94,11 +98,22 @@ class MyPageScreen extends StatelessWidget {
 										contentPadding: EdgeInsets.zero,
 										visualDensity: const VisualDensity(horizontal: -2, vertical: -4),
 										title: const Text(
-											'로그아웃',
+											'회원탈퇴',
 											style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: AppColors.grey),
 										),
-										onTap: () {
-											// TODO: 로그아웃 처리
+										onTap: () async {
+											// 회원탈퇴 API 호출
+											final service = MyPageService(apiClient.dio);
+											try {
+												final response = await service.withdraw();
+												print('[회원탈퇴] 성공: ${response.isSuccess}, code: ${response.code}, message: ${response.message}');
+											} catch (e) {
+												print('[회원탈퇴] 실패: $e');
+											}
+											// 토큰 삭제
+											await TokenStorage.clearTokens();
+											// 스플래시로 이동
+											context.go('/splash');
 										},
 									),
 								],

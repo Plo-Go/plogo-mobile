@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/onboarding_provider.dart';
 import '../widgets/onboarding_item.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
+import 'package:plogo/core/api/api_client.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -89,12 +90,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               height: 50,
               child: ElevatedButton(
                 onPressed: stepSelections.isNotEmpty
-                    ? () {
+                    ? () async {
                   if (currentStep + 1 < OnboardingNotifier.steps.length) {
                     setState(() {
                       currentStep++;
                     });
                   } else {
+                    // 마지막 완료 시 선호도 저장 API 호출
+                    final dio = apiClient.dio;
+                    final isSuccess = await ref.read(onboardingProvider.notifier).submit(dio);
+                    debugPrint('[온보딩 완료] 선호도 저장 결과: $isSuccess');
                     context.go('/onboarding-complete');
                   }
                 }
