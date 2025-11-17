@@ -10,6 +10,7 @@ import '../../features/log/screens/log_screen.dart';
 import '../../features/mypage/screens/mypage_screen.dart';
 import '../../features/search/screens/search_screen.dart';
 import '../../features/auth/screens/login_screen.dart';
+import '../../features/detail/screens/course_detail_screen.dart';
 
 /// 앱 라우터 설정
 final appRouter = GoRouter(
@@ -48,7 +49,6 @@ final appRouter = GoRouter(
         } else {
           index = 0; // 기본 홈
         }
-
         return MainLayout(
           child: child,
           currentIndex: index,
@@ -73,6 +73,10 @@ final appRouter = GoRouter(
           pageBuilder: (context, state) => const NoTransitionPage(child: HomeScreen()),
         ),
         GoRoute(
+          path: '/search',
+          builder: (context, state) => const SearchScreen(),
+        ),
+        GoRoute(
           path: '/log',
           pageBuilder: (context, state) => const NoTransitionPage(child: LogScreen()),
         ),
@@ -81,8 +85,28 @@ final appRouter = GoRouter(
           pageBuilder: (context, state) => const NoTransitionPage(child: MyPageScreen()),
         ),
         GoRoute(
-          path: '/search',
-          builder: (context, state) => const SearchScreen(),
+          path: '/home/detail/:courseId',
+          builder: (context, state) {
+            final courseId = int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
+            final title = state.extra is String ? state.extra as String : null;
+            return CourseDetailScreen(courseId: courseId, title: title);
+          },
+        ),
+        GoRoute(
+          path: '/log/detail/:courseId',
+          builder: (context, state) {
+            final courseId = int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
+            final title = state.extra is String ? state.extra as String : null;
+            return CourseDetailScreen(courseId: courseId, title: title);
+          },
+        ),
+        GoRoute(
+          path: '/mypage/detail/:courseId',
+          builder: (context, state) {
+            final courseId = int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
+            final title = state.extra is String ? state.extra as String : null;
+            return CourseDetailScreen(courseId: courseId, title: title);
+          },
         ),
         GoRoute(
           path: '/region/:areaCode',
