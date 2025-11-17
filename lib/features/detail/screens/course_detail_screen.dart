@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:plogo/features/detail/models/course_detail_model.dart';
 import 'package:plogo/features/detail/services/course_detail_service.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
+import 'package:plogo/features/detail/widgets/course_posts_section.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+
 
 class CourseDetailScreen extends StatefulWidget {
   final int courseId;
@@ -15,6 +17,26 @@ class CourseDetailScreen extends StatefulWidget {
 }
 
 class _CourseDetailScreenState extends State<CourseDetailScreen> {
+  List<Map<String, dynamic>> coursePosts = [];
+
+  Future<void> _fetchCoursePosts() async {
+    try {
+      final response = await CourseDetailService().getCoursePosts(widget.courseId);
+      if (response != null && response['isSuccess'] == true && response['data'] is List) {
+        setState(() {
+          coursePosts = List<Map<String, dynamic>>.from(response['data']);
+        });
+      } else {
+        setState(() {
+          coursePosts = [];
+        });
+      }
+    } catch (e) {
+      setState(() {
+        coursePosts = [];
+      });
+    }
+  }
     bool _showFullSummary = false;
     Widget _buildSummary(String summary) {
       const int maxLines = 5;
@@ -61,6 +83,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   void initState() {
     super.initState();
     _fetchDetail();
+  _fetchCoursePosts();
   }
 
   Future<void> _fetchDetail() async {
@@ -247,6 +270,13 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                             ],
                                           ),
                                         ),
+                                      // 구분선
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                                        child: Divider(thickness: 1, color: AppColors.grey.withOpacity(0.3)),
+                                      ),
+                                      // 관련 포스팅 영역
+                                      CoursePostsSection(coursePosts: coursePosts),
                                     ],
                                   ),
                                 ),

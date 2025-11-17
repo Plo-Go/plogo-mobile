@@ -5,6 +5,17 @@ import '../models/course_detail_model.dart';
 class CourseDetailService {
   final Dio _dio = apiClient.dio;
 
+  Future<Map<String, dynamic>?> getCoursePosts(int courseId) async {
+    try {
+      print('[CoursePosts] 요청 courseId: $courseId');
+      final response = await _dio.get('/course/post/$courseId');
+      print('[CoursePosts] 응답: ${response.data}');
+      return response.data;
+    } catch (e) {
+      print('[CoursePosts] 에러: $e');
+      return null;
+    }
+  }
   Future<CourseDetailResponse> getCourseDetail(int courseId) async {
     try {
       final response = await _dio.get('/course/detail/$courseId');
