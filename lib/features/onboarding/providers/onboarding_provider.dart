@@ -55,10 +55,13 @@ class OnboardingNotifier extends Notifier<List<List<String>>> {
     try {
       final response = await dio.post('/course/analyze', data: body);
       final isSuccess = response.data['isSuccess'] == true;
-      debugPrint('API 응답: ${response.data}');
+      debugPrint('[선호도 저장 API] 응답: ${response.data}');
+      debugPrint('[선호도 저장 API] isSuccess: $isSuccess');
+      debugPrint('[선호도 저장 API] code: ${response.data['code']}');
+      debugPrint('[선호도 저장 API] message: ${response.data['message']}');
       return isSuccess;
     } catch (e) {
-      debugPrint('API 오류: $e');
+      debugPrint('[선호도 저장 API] 오류: $e');
       return false;
     }
   }

@@ -6,6 +6,7 @@ import '../services/auth_service.dart';
 import '../services/token_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/user_info_provider.dart';
+import 'package:plogo/features/home/services/recommend_service.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -46,7 +47,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
         // 5. JWT 토큰으로 유저 정보 조회
         try {
-          // Dio 인스턴스에 JWT 토큰 세팅 필요 (생략 시 기존 AuthService 활용)
           final userInfoResponse = await _authService.getUserInfo();
           if (userInfoResponse.isSuccess && userInfoResponse.data != null) {
             final userInfo = UserInfo.fromJson(userInfoResponse.data!);
@@ -57,9 +57,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           print('유저 정보 조회 실패: $e');
         }
 
-        // 6. 온보딩 화면으로 이동
-        if (mounted) {
-          context.go('/onboarding');
+        // 6. 추천 코스 조회 후 온보딩/홈 분기
+        try {
+          final recommendService = RecommendService();
+          final recommendResponse = await recommendService.getRecommendedCourses();
+          print('[추천코스 API] isSuccess: [32m${recommendResponse.isSuccess}[0m');
+          print('[추천코스 API] code: ${recommendResponse.code}');
+          print('[추천코스 API] message: ${recommendResponse.message}');
+          print('[추천코스 API] data.length: [36m${recommendResponse.data.length}[0m');
+          print('[추천코스 API] data: ${recommendResponse.data}');
+          if (recommendResponse.isSuccess && recommendResponse.data.isNotEmpty) {
+            print('[분기] 홈으로 이동');
+            if (mounted) context.go('/home');
+          } else {
+            print('[분기] 온보딩으로 이동');
+            if (mounted) context.go('/onboarding');
+          }
+        } catch (e) {
+          print('[추천코스 API] 예외 발생: $e');
+          print('[분기] 온보딩으로 이동');
+          if (mounted) context.go('/onboarding');
         }
       } else {
         throw Exception(loginResponse.message);
