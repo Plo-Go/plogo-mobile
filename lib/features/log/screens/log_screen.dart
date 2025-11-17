@@ -27,7 +27,7 @@ class _LogScreenState extends State<LogScreen> {
       width: 24,
       height: 24,
     );
-    
+
     // Base64 이미지가 준비되면 커스텀 이미지 적용
     if (_markerImageDataUri != null) {
       return [
@@ -41,7 +41,7 @@ class _LogScreenState extends State<LogScreen> {
         ),
       ];
     }
-    
+
     return [marker]; // 기본 마커
   }
 
@@ -54,12 +54,13 @@ class _LogScreenState extends State<LogScreen> {
   /// 마커 이미지 URL 설정
   Future<void> _loadMarkerImage() async {
     // kakao_map_plugin은 웹 URL만 지원 (Base64 data URI 불가)
-    const markerUrl = 'https://raw.githubusercontent.com/Plo-Go/plogo-mobile/develop/assets/icons/marker.png';
-    
+    const markerUrl =
+        'https://raw.githubusercontent.com/Plo-Go/plogo-mobile/develop/assets/icons/marker.png';
+
     setState(() {
       _markerImageDataUri = markerUrl;
     });
-    
+
     debugPrint('커스텀 마커 URL 설정: $markerUrl');
   }
 
@@ -85,11 +86,8 @@ class _LogScreenState extends State<LogScreen> {
               child: TopBar(),
             ),
             const SizedBox(height: 16),
-
             Expanded(
-              child: _mapLoadFailed
-                  ? _buildFallbackMap()
-                  : _buildKakaoMap(),
+              child: _mapLoadFailed ? _buildFallbackMap() : _buildKakaoMap(),
             ),
           ],
         ),

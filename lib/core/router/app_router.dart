@@ -70,7 +70,8 @@ final appRouter = GoRouter(
       routes: [
         GoRoute(
           path: '/home',
-          pageBuilder: (context, state) => const NoTransitionPage(child: HomeScreen()),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: HomeScreen()),
         ),
         GoRoute(
           path: '/search',
@@ -78,16 +79,19 @@ final appRouter = GoRouter(
         ),
         GoRoute(
           path: '/log',
-          pageBuilder: (context, state) => const NoTransitionPage(child: LogScreen()),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: LogScreen()),
         ),
         GoRoute(
           path: '/mypage',
-          pageBuilder: (context, state) => const NoTransitionPage(child: MyPageScreen()),
+          pageBuilder: (context, state) =>
+              const NoTransitionPage(child: MyPageScreen()),
         ),
         GoRoute(
           path: '/home/detail/:courseId',
           builder: (context, state) {
-            final courseId = int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
+            final courseId =
+                int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
             final title = state.extra is String ? state.extra as String : null;
             return CourseDetailScreen(courseId: courseId, title: title);
           },
@@ -95,7 +99,8 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/log/detail/:courseId',
           builder: (context, state) {
-            final courseId = int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
+            final courseId =
+                int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
             final title = state.extra is String ? state.extra as String : null;
             return CourseDetailScreen(courseId: courseId, title: title);
           },
@@ -103,7 +108,8 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/mypage/detail/:courseId',
           builder: (context, state) {
-            final courseId = int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
+            final courseId =
+                int.tryParse(state.pathParameters['courseId'] ?? '0') ?? 0;
             final title = state.extra is String ? state.extra as String : null;
             return CourseDetailScreen(courseId: courseId, title: title);
           },
@@ -111,8 +117,10 @@ final appRouter = GoRouter(
         GoRoute(
           path: '/region/:areaCode',
           builder: (context, state) {
-            final areaCode = int.tryParse(state.pathParameters['areaCode'] ?? '0') ?? 0;
-            final regionName = state.extra is String ? state.extra as String : '';
+            final areaCode =
+                int.tryParse(state.pathParameters['areaCode'] ?? '0') ?? 0;
+            final regionName =
+                state.extra is String ? state.extra as String : '';
             return RegionListScreen(regionName: regionName, areaCode: areaCode);
           },
         ),
@@ -120,4 +128,3 @@ final appRouter = GoRouter(
     ),
   ],
 );
-

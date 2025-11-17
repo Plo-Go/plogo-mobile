@@ -57,7 +57,8 @@ class SavedCoursesSection extends StatelessWidget {
                           width: 8,
                           height: 8,
                           color: AppColors.grey,
-                          errorBuilder: (context, error, stackTrace) => const Icon(
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
                             Icons.arrow_forward_ios,
                             size: 8,
                             color: AppColors.grey,

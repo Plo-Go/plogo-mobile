@@ -4,7 +4,8 @@ import '../../features/auth/services/token_storage.dart';
 
 class ApiInterceptor extends Interceptor {
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
     try {
       final token = await TokenStorage.getAccessToken();
       if (token != null && token.isNotEmpty) {
@@ -33,8 +34,6 @@ class ApiInterceptor extends Interceptor {
     ));
   }
 
-
-
   Exception _handleError(DioException error) {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
@@ -53,4 +52,3 @@ class ApiInterceptor extends Interceptor {
     }
   }
 }
-

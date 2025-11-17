@@ -26,7 +26,8 @@ class CourseSection extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 4),

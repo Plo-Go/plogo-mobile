@@ -73,21 +73,21 @@ class _SearchScreenState extends State<SearchScreen> {
               // TODO: 최근 검색어 삭제 로직
             },
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           const RecentViewedCoursesSection(),
-          
+
           const SizedBox(height: 32),
-          
+
           const PopularCoursesSection(),
-          
+
           const SizedBox(height: 32),
         ],
       ),
     );
   }
-  
+
   Widget _buildCourseCard(String name, String location, String imagePath) {
     return Container(
       width: 160,
@@ -173,7 +173,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
-  
+
   Widget _buildPopularCourseItem(int rank, String name, int? rightRank) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
@@ -244,7 +244,7 @@ class _SearchScreenState extends State<SearchScreen> {
       ),
     );
   }
-  
+
   String _getPopularCourseName(int rank) {
     const names = {
       6: '안양천 생태아이가든',
@@ -258,7 +258,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSearchResults() {
     final query = _searchController.text.toLowerCase();
-    
+
     // 샘플 데이터
     final regions = [
       {'name': '문경', 'fullName': '경상북도 문경시'},
@@ -266,24 +266,24 @@ class _SearchScreenState extends State<SearchScreen> {
       {'name': '세종', 'fullName': '세종특별자치시'},
       {'name': '서울', 'fullName': '서울특별시'},
     ];
-    
+
     final courses = [
       {'name': '문경새재 도립공원', 'address': '경상북도 문경시 문경읍 새재로 932'},
       {'name': '문경 용추계곡', 'address': '경상북도 문경시 가은읍 완장리'},
       {'name': '세종호수공원', 'address': '세종특별자치시 연기면'},
       {'name': '서울숲', 'address': '서울특별시 성동구 뚝섬로'},
     ];
-    
+
     // 검색어로 필터링
-    final filteredRegions = regions.where((r) => 
-      r['name']!.toLowerCase().contains(query)
-    ).toList();
-    
-    final filteredCourses = courses.where((c) => 
-      c['name']!.toLowerCase().contains(query) || 
-      c['address']!.toLowerCase().contains(query)
-    ).toList();
-    
+    final filteredRegions =
+        regions.where((r) => r['name']!.toLowerCase().contains(query)).toList();
+
+    final filteredCourses = courses
+        .where((c) =>
+            c['name']!.toLowerCase().contains(query) ||
+            c['address']!.toLowerCase().contains(query))
+        .toList();
+
     // 결과가 없을 때
     if (filteredRegions.isEmpty && filteredCourses.isEmpty) {
       return Center(
@@ -299,26 +299,26 @@ class _SearchScreenState extends State<SearchScreen> {
         ),
       );
     }
-    
+
     return ListView(
       padding: const EdgeInsets.all(20),
       children: [
         // 지역 결과
         ...filteredRegions.map((region) => SearchRegionItem(
-          query: _searchController.text,
-          name: region['name']!,
-          fullName: region['fullName']!,
-        )),
+              query: _searchController.text,
+              name: region['name']!,
+              fullName: region['fullName']!,
+            )),
 
         if (filteredCourses.isNotEmpty) const SizedBox(height: 20),
-        
+
         // 코스 결과
         ...filteredCourses.map((course) => SearchCourseItem(
-          query: _searchController.text,
-          name: course['name']!,
-          address: course['address']!,
-          iconPath: 'assets/images/sample.png',
-        )),
+              query: _searchController.text,
+              name: course['name']!,
+              address: course['address']!,
+              iconPath: 'assets/images/sample.png',
+            )),
       ],
     );
   }

@@ -21,6 +21,7 @@ class ApiResponse {
     );
   }
 }
+
 /// 카카오 모바일 로그인 요청 모델
 class KakaoMobileLoginRequest {
   final String accessToken;

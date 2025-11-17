@@ -3,7 +3,7 @@ import 'package:plogo/features/detail/models/course_detail_model.dart';
 import 'package:plogo/features/detail/services/course_detail_service.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 
 class CourseDetailScreen extends StatefulWidget {
   final int courseId;
@@ -15,6 +15,43 @@ class CourseDetailScreen extends StatefulWidget {
 }
 
 class _CourseDetailScreenState extends State<CourseDetailScreen> {
+    bool _showFullSummary = false;
+    Widget _buildSummary(String summary) {
+      const int maxLines = 5;
+      final int lineCount = summary.split('\n').length;
+      final bool isLong = lineCount > maxLines || summary.length > 120;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        !_showFullSummary && isLong
+            ? Text(
+                summary,
+                style: TextStyle(fontSize: 14, color: Colors.black),
+                maxLines: maxLines,
+                overflow: TextOverflow.ellipsis,
+              )
+            : Text(
+                summary,
+                style: TextStyle(fontSize: 14, color: Colors.black),
+              ),
+        if (isLong)
+          GestureDetector(
+            onTap: () => setState(() => _showFullSummary = !_showFullSummary),
+            child: Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                _showFullSummary ? '접기' : '더보기',
+                style: TextStyle(
+                  color: AppColors.grey,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
   bool isSave = false;
   CourseDetail? detail;
   bool loading = true;
@@ -32,7 +69,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
       error = null;
     });
     try {
-      final response = await CourseDetailService().getCourseDetail(widget.courseId);
+      final response =
+          await CourseDetailService().getCourseDetail(widget.courseId);
       setState(() {
         detail = response.data;
         isSave = response.data.isSave ?? false;
@@ -61,7 +99,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
             }
           },
         ),
-        title: Text(widget.title ?? '', style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(widget.title ?? '',
+            style: const TextStyle(fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: AppColors.white,
         elevation: 0,
@@ -100,12 +139,18 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                         right: 16,
                                         bottom: 16,
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: 8, vertical: 4),
                                           decoration: BoxDecoration(
-                                            color: Colors.black.withOpacity(0.5),
-                                            borderRadius: BorderRadius.circular(8),
+                                            color:
+                                                Colors.black.withOpacity(0.5),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                           ),
-                                          child: Text('1/1', style: TextStyle(color: Colors.white, fontSize: 12)),
+                                          child: Text('1/1',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 12)),
                                         ),
                                       ),
                                     ],
@@ -113,15 +158,21 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                 Padding(
                                   padding: EdgeInsets.all(16),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text(detail!.summary, style: TextStyle(fontSize: 15)),
+                                      _buildSummary(detail!.summary),
                                       SizedBox(height: 12),
                                       Row(
                                         children: [
-                                          Icon(Icons.location_on_outlined, size: 24, color: AppColors.grey),
+                                          Icon(Icons.location_on_outlined,
+                                              size: 15, color: AppColors.grey),
                                           SizedBox(width: 6),
-                                          Expanded(child: Text(detail!.address, style: TextStyle(fontSize: 18, color: AppColors.black))),
+                                          Expanded(
+                                              child: Text(detail!.address,
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: AppColors.grey))),
                                         ],
                                       ),
                                       if (detail!.charge.isNotEmpty)
@@ -129,9 +180,16 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                           padding: EdgeInsets.only(top: 8),
                                           child: Row(
                                             children: [
-                                              Icon(Icons.wallet_outlined, size: 18, color: AppColors.grey),
+                                              Icon(Icons.wallet_outlined,
+                                                  size: 15,
+                                                  color: AppColors.grey),
                                               SizedBox(width: 6),
-                                              Expanded(child: Text(detail!.charge, style: TextStyle(fontSize: 13, color: AppColors.black))),
+                                              Expanded(
+                                                  child: Text(detail!.charge,
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: AppColors
+                                                              .grey))),
                                             ],
                                           ),
                                         ),
@@ -140,9 +198,16 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                           padding: EdgeInsets.only(top: 8),
                                           child: Row(
                                             children: [
-                                              Icon(Icons.phone_outlined, size: 18, color: AppColors.grey),
+                                              Icon(Icons.phone_outlined,
+                                                  size: 15,
+                                                  color: AppColors.grey),
                                               SizedBox(width: 6),
-                                              Expanded(child: Text(detail!.tel, style: TextStyle(fontSize: 13, color: AppColors.black))),
+                                              Expanded(
+                                                  child: Text(detail!.tel,
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: AppColors
+                                                              .grey))),
                                             ],
                                           ),
                                         ),
@@ -151,9 +216,34 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                           padding: EdgeInsets.only(top: 8),
                                           child: Row(
                                             children: [
-                                              Icon(Icons.open_in_new, size: 18, color: AppColors.grey),
+                                              Icon(Icons.open_in_new,
+                                                  size: 15,
+                                                  color: AppColors.grey),
                                               SizedBox(width: 6),
-                                              Expanded(child: Text(detail!.homepage, style: TextStyle(fontSize: 13, color: AppColors.black))),
+                                              Expanded(
+                                                child: InkWell(
+                                                  onTap: () async {
+                                                    final url =
+                                                        detail!.homepage;
+                                                    if (await canLaunchUrl(
+                                                        Uri.parse(url))) {
+                                                      await launchUrl(
+                                                          Uri.parse(url));
+                                                    }
+                                                  },
+                                                  child: Text(
+                                                    detail!.homepage,
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: AppColors.grey,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline),
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                  ),
+                                                ),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -166,16 +256,22 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                         ),
                         Container(
                           width: double.infinity,
-                          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 24, vertical: 16),
                           color: AppColors.white,
                           child: ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.primary,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12)),
                               padding: EdgeInsets.symmetric(vertical: 14),
                             ),
-                            child: Text('완주하기', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColors.white)),
+                            child: Text('완주하기',
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.white)),
                           ),
                         ),
                       ],

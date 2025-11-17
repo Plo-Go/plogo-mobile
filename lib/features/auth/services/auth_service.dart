@@ -17,6 +17,7 @@ class AuthService {
       throw Exception('유저 정보 조회 실패: $e');
     }
   }
+
   final Dio _dio = apiClient.dio;
 
   /// 카카오 모바일 로그인

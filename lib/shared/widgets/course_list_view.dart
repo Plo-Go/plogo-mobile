@@ -41,7 +41,8 @@ class CourseListView extends StatelessWidget {
                       onTap: () {
                         // 상세페이지 이동 (GoRouter)
                         // 현재 route에 따라 상세페이지 경로 결정
-                        final location = GoRouterState.of(context).matchedLocation;
+                        final location =
+                            GoRouterState.of(context).matchedLocation;
                         String detailRoute;
                         if (location.startsWith('/log')) {
                           detailRoute = '/log/detail/${course.courseId}';
@@ -53,7 +54,8 @@ class CourseListView extends StatelessWidget {
                         context.go(detailRoute, extra: course.name);
                       },
                       child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24, vertical: 2),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -62,17 +64,26 @@ class CourseListView extends StatelessWidget {
                               children: [
                                 Expanded(
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       const SizedBox(height: 18),
-                                      Text(course.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                                      Text(course.name,
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18)),
                                       const SizedBox(height: 4),
-                                      Text(course.area, style: const TextStyle(fontSize: 12, color: AppColors.grey)),
+                                      Text(course.area,
+                                          style: const TextStyle(
+                                              fontSize: 12,
+                                              color: AppColors.grey)),
                                     ],
                                   ),
                                 ),
                                 Icon(
-                                  course.isSave ? Icons.bookmark : Icons.bookmark_border,
+                                  course.isSave
+                                      ? Icons.bookmark
+                                      : Icons.bookmark_border,
                                   color: AppColors.primary,
                                 ),
                               ],
@@ -90,7 +101,9 @@ class CourseListView extends StatelessWidget {
                                   : Container(
                                       height: 160,
                                       color: AppColors.greyLight,
-                                      child: const Center(child: Icon(Icons.image, color: AppColors.grey, size: 40)),
+                                      child: const Center(
+                                          child: Icon(Icons.image,
+                                              color: AppColors.grey, size: 40)),
                                     ),
                             ),
                           ],
