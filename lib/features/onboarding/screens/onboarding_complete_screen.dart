@@ -5,9 +5,7 @@ import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:plogo/shared/widgets/loading_indicator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// 예시: 닉네임 Provider (실제 프로젝트에 맞게 수정 필요)
-final nicknameProvider = Provider<String>((ref) => '닉네임');
+import 'package:plogo/features/auth/providers/user_info_provider.dart';
 
 class OnboardingCompleteScreen extends ConsumerStatefulWidget {
   const OnboardingCompleteScreen({super.key});
@@ -33,7 +31,8 @@ class _OnboardingCompleteScreenState extends ConsumerState<OnboardingCompleteScr
 
   @override
   Widget build(BuildContext context) {
-    final nickname = ref.watch(nicknameProvider);
+    final userInfo = ref.watch(userInfoProvider);
+    final nickname = userInfo?.nickname ?? '회원';
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
