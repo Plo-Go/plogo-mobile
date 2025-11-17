@@ -5,6 +5,8 @@ import 'package:plogo/features/home/widgets/course_section.dart';
 import 'package:plogo/features/home/services/recommend_service.dart';
 import 'package:plogo/features/home/services/hot_course_service.dart';
 import 'package:plogo/features/home/models/course_models.dart';
+import 'package:plogo/features/home/models/area_code_model.dart';
+import 'package:plogo/features/home/services/area_code_service.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -96,23 +98,27 @@ class HomeScreen extends StatelessWidget {
                             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                           const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: const [
-                              _RegionButton(label: '전체', trailingAsset: 'assets/images/arrow.png'),
-                              _RegionButton(label: '서울'),
-                              _RegionButton(label: '인천'),
-                              _RegionButton(label: '부산'),
-                              _RegionButton(label: '대구'),
-                              _RegionButton(label: '광주'),
-                              _RegionButton(label: '울산'),
-                              _RegionButton(label: '세종'),
-                              _RegionButton(label: '경기도'),
-                              _RegionButton(label: '강원도'),
-                              _RegionButton(label: '충청도'),
-                              _RegionButton(label: '전라도'),
-                            ],
+                          FutureBuilder<List<AreaCode>>(
+                            future: AreaCodeService().getAreaCodes(),
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(child: CircularProgressIndicator());
+                              }
+                              if (snapshot.hasError) {
+                                return Center(child: Text('지역 코드 불러오기 실패'));
+                              }
+                              final areaCodes = snapshot.data ?? [];
+                              return Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: areaCodes.map((area) {
+                                  return _RegionButton(
+                                    label: area.areaName,
+                                    trailingAsset: area.areaCode == 0 ? 'assets/images/arrow.png' : null,
+                                  );
+                                }).toList(),
+                              );
+                            },
                           ),
                           const SizedBox(height: 24),
                         ],
