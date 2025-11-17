@@ -4,6 +4,20 @@ import '../models/auth_models.dart';
 
 /// 인증 관련 API 서비스
 class AuthService {
+  /// 유저 정보 조회
+  Future<ApiResponse> getUserInfo() async {
+    try {
+      final response = await _dio.get('/user/info');
+      print('유저 정보 응답: ${response.data}');
+      return ApiResponse.fromJson(response.data);
+    } on DioException catch (e) {
+      print('유저 정보 DioException: ${e.message}');
+      throw Exception('유저 정보 조회 실패: ${e.message}');
+    } catch (e) {
+      print('유저 정보 알 수 없는 에러: $e');
+      throw Exception('유저 정보 조회 실패: $e');
+    }
+  }
   final Dio _dio = apiClient.dio;
 
   /// 카카오 모바일 로그인

@@ -4,15 +4,17 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import '../services/auth_service.dart';
 import '../services/token_storage.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/user_info_provider.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final AuthService _authService = AuthService();
   bool _isLoading = false;
 
@@ -42,7 +44,20 @@ class _LoginScreenState extends State<LoginScreen> {
         );
         print('JWT 토큰 저장 완료');
 
-        // 5. 온보딩 화면으로 이동
+        // 5. JWT 토큰으로 유저 정보 조회
+        try {
+          // Dio 인스턴스에 JWT 토큰 세팅 필요 (생략 시 기존 AuthService 활용)
+          final userInfoResponse = await _authService.getUserInfo();
+          if (userInfoResponse.isSuccess && userInfoResponse.data != null) {
+            final userInfo = UserInfo.fromJson(userInfoResponse.data!);
+            ref.read(userInfoProvider.notifier).state = userInfo;
+            print('유저 정보 저장 완료: ${userInfo.nickname}');
+          }
+        } catch (e) {
+          print('유저 정보 조회 실패: $e');
+        }
+
+        // 6. 온보딩 화면으로 이동
         if (mounted) {
           context.go('/onboarding');
         }

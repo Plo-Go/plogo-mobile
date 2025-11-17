@@ -1,3 +1,25 @@
+class ApiResponse {
+  final bool isSuccess;
+  final String code;
+  final String message;
+  final Map<String, dynamic>? data;
+
+  ApiResponse({
+    required this.isSuccess,
+    required this.code,
+    required this.message,
+    required this.data,
+  });
+
+  factory ApiResponse.fromJson(Map<String, dynamic> json) {
+    return ApiResponse(
+      isSuccess: json['isSuccess'] ?? false,
+      code: json['code'] ?? '',
+      message: json['message'] ?? '',
+      data: json['data'],
+    );
+  }
+}
 /// 카카오 모바일 로그인 요청 모델
 class KakaoMobileLoginRequest {
   final String accessToken;
