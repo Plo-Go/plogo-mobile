@@ -8,6 +8,7 @@ import 'package:plogo/features/home/models/course_models.dart';
 import 'package:plogo/features/home/models/area_code_model.dart';
 import 'package:plogo/features/home/services/area_code_service.dart';
 import 'package:plogo/features/region/screens/region_list.dart';
+import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -157,19 +158,13 @@ class _RegionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: (MediaQuery.of(context).size.width - 64) / 3, // 24+24 padding + 2*8 gaps
+      width: (MediaQuery.of(context).size.width - 64) / 3,
       height: 44,
       child: ElevatedButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => RegionListScreen(
-                regionName: label,
-                areaCode: areaCode,
-              ),
-            ),
-          );
+          // GoRouter로 RegionListScreen 이동
+          // regionName은 extra로 전달
+          context.push('/region/$areaCode', extra: label);
         },
         style: ElevatedButton.styleFrom(
           elevation: 0,

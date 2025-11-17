@@ -38,7 +38,10 @@ class MainLayout extends StatelessWidget {
         height: barHeight,
         child: AppBottomNavBar(
           currentIndex: currentIndex,
-          onTap: onTap,
+          onTap: (index) {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+            onTap(index);
+          },
           iconSize: iconSize,
           iconLabelGap: iconLabelGap,
           selectedFontSize: selectedFontSize,

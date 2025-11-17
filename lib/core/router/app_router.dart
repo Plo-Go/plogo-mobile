@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:plogo/features/region/screens/region_list.dart';
 import 'package:plogo/layout/main_layout.dart';
 import '../../features/onboarding/screens/onboarding_screen.dart';
 import '../../features/onboarding/screens/splash_screen.dart';
@@ -79,10 +80,17 @@ final appRouter = GoRouter(
           path: '/mypage',
           pageBuilder: (context, state) => const NoTransitionPage(child: MyPageScreen()),
         ),
-        // 검색 화면 (하단바 포함)
         GoRoute(
           path: '/search',
           builder: (context, state) => const SearchScreen(),
+        ),
+        GoRoute(
+          path: '/region/:areaCode',
+          builder: (context, state) {
+            final areaCode = int.tryParse(state.pathParameters['areaCode'] ?? '0') ?? 0;
+            final regionName = state.extra is String ? state.extra as String : '';
+            return RegionListScreen(regionName: regionName, areaCode: areaCode);
+          },
         ),
       ],
     ),
