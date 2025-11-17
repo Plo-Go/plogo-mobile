@@ -1,3 +1,4 @@
+// API 공통 응답 모델
 class ApiResponse {
   final bool isSuccess;
   final String code;
