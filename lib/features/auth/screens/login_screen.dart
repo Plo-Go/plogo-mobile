@@ -114,7 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Image.asset(
                       'assets/images/plogo.png',
-                      height: 80,
+                      height: 70,
                       fit: BoxFit.contain,
                     ),
                     SizedBox(height: 8),

@@ -2,59 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:plogo/shared/widgets/top_bar.dart';
 import 'package:plogo/features/home/widgets/course_section.dart';
+import 'package:plogo/features/home/services/recommend_service.dart';
+import 'package:plogo/features/home/models/course_models.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // 섹션별 아이템 목록 (임시 더미 데이터)
-    final recommendedItems = <Map<String, String>>[
-      {
-        'name': '문정새싹 둔촌코스',
-        'location': '서울 송파구',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '반포 한강공원',
-        'location': '서울 서초구',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '여의도 샛강 둘레',
-        'location': '서울 영등포구',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '올림픽공원 순환',
-        'location': '서울 송파구',
-        'imagePath': 'assets/images/sample.png',
-      },
-    ];
-
-    final hotItems = <Map<String, String>>[
-      {
-        'name': '성수 리버뷰 코스',
-        'location': '서울 성동구',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '북서울 꿈의숲',
-        'location': '서울 강북구',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '한강시민공원 동작',
-        'location': '서울 동작구',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '남산 타워링',
-        'location': '서울 중구',
-        'imagePath': 'assets/images/sample.png',
-      },
-    ];
-
     return Scaffold(
       backgroundColor: AppColors.white,
       body: SafeArea(
@@ -67,69 +22,113 @@ class HomeScreen extends StatelessWidget {
             ),
             // 스크롤 가능한 콘텐츠
             Expanded(
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 20),
-                    CourseSection(
-                      title: '나를 위한 코스 추천',
-                      subtitle: '선호도 기반으로 추천드리는 코스들이에요',
-                      items: recommendedItems,
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 8,
-                      color: AppColors.greyLight,
-                    ),
-                    const SizedBox(height: 20),
-                    CourseSection(
-                      title: '요즘 핫한 코스 추천',
-                      subtitle: '최근 사용자들 사이에서 인기가 많아요',
-                      items: hotItems,
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                      height: 8,
-                      color: AppColors.greyLight,
-                    ),
-                    const SizedBox(height: 20),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 24),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            '지역별 코스 찾기',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 12),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 8,
-                            children: const [
-                              _RegionButton(label: '전체', trailingAsset: 'assets/images/arrow.png'),
-                              _RegionButton(label: '서울'),
-                              _RegionButton(label: '인천'),
-                              _RegionButton(label: '부산'),
-                              _RegionButton(label: '대구'),
-                              _RegionButton(label: '광주'),
-                              _RegionButton(label: '울산'),
-                              _RegionButton(label: '세종'),
-                              _RegionButton(label: '경기도'),
-                              _RegionButton(label: '강원도'),
-                              _RegionButton(label: '충청도'),
-                              _RegionButton(label: '전라도'),
+              child: FutureBuilder<CourseRecommendResponse>(
+                future: RecommendService().getRecommendedCourses(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  if (snapshot.hasError) {
+                    return Center(child: Text('추천 코스 불러오기 실패'));
+                  }
+                  final response = snapshot.data;
+                  print('[추천코스 API 응답] isSuccess: ${response?.isSuccess}, code: ${response?.code}, message: ${response?.message}');
+                  final recommendedItems = (response?.data ?? []).map((item) => {
+                    'name': item.name,
+                    'location': item.area,
+                    // imagePath가 없거나 잘못된 경우 빈 문자열로 넘김 (CourseCard에서 처리)
+                    'imagePath': (item.image == null || item.image.isEmpty || item.image == 'string')
+                        ? ''
+                        : item.image,
+                  }).toList();
+                  // hotItems는 기존 더미 데이터 사용
+                  final hotItems = <Map<String, String>>[
+                    {
+                      'name': '성수 리버뷰 코스',
+                      'location': '서울 성동구',
+                      'imagePath': 'assets/images/sample.png',
+                    },
+                    {
+                      'name': '북서울 꿈의숲',
+                      'location': '서울 강북구',
+                      'imagePath': 'assets/images/sample.png',
+                    },
+                    {
+                      'name': '한강시민공원 동작',
+                      'location': '서울 동작구',
+                      'imagePath': 'assets/images/sample.png',
+                    },
+                    {
+                      'name': '남산 타워링',
+                      'location': '서울 중구',
+                      'imagePath': 'assets/images/sample.png',
+                    },
+                  ];
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 20),
+                        CourseSection(
+                          title: '나를 위한 코스 추천',
+                          subtitle: '선호도 기반으로 추천드리는 코스들이에요',
+                          items: recommendedItems,
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 8,
+                          color: AppColors.greyLight,
+                        ),
+                        const SizedBox(height: 20),
+                        CourseSection(
+                          title: '요즘 핫한 코스 추천',
+                          subtitle: '최근 사용자들 사이에서 인기가 많아요',
+                          items: hotItems,
+                        ),
+                        const SizedBox(height: 20),
+                        Container(
+                          width: MediaQuery.of(context).size.width,
+                          height: 8,
+                          color: AppColors.greyLight,
+                        ),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                '지역별 코스 찾기',
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              ),
+                              const SizedBox(height: 12),
+                              Wrap(
+                                spacing: 8,
+                                runSpacing: 8,
+                                children: const [
+                                  _RegionButton(label: '전체', trailingAsset: 'assets/images/arrow.png'),
+                                  _RegionButton(label: '서울'),
+                                  _RegionButton(label: '인천'),
+                                  _RegionButton(label: '부산'),
+                                  _RegionButton(label: '대구'),
+                                  _RegionButton(label: '광주'),
+                                  _RegionButton(label: '울산'),
+                                  _RegionButton(label: '세종'),
+                                  _RegionButton(label: '경기도'),
+                                  _RegionButton(label: '강원도'),
+                                  _RegionButton(label: '충청도'),
+                                  _RegionButton(label: '전라도'),
+                                ],
+                              ),
+                              const SizedBox(height: 24),
                             ],
                           ),
-                          const SizedBox(height: 24),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           ],

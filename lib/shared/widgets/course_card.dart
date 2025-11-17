@@ -15,6 +15,8 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isNetworkImage = imagePath.startsWith('http://') || imagePath.startsWith('https://');
+    final isEmptyImage = imagePath.isEmpty || imagePath == 'string';
     return Container(
       width: 128,
       height: 128,
@@ -27,18 +29,49 @@ class CourseCard extends StatelessWidget {
         children: [
           // 배경 이미지
           Positioned.fill(
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: AppColors.border,
-                child: const Icon(
-                  Icons.image,
-                  size: 40,
-                  color: AppColors.grey,
-                ),
-              ),
-            ),
+            child: isEmptyImage
+                ? Container(
+                    color: AppColors.border,
+                    child: const Center(
+                      child: Icon(
+                        Icons.image,
+                        size: 40,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                  )
+                : isNetworkImage
+                    ? Image.network(
+                        imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          print('[이미지 로딩 에러] URL: $imagePath, error: $error');
+                          return Container(
+                            color: AppColors.border,
+                            child: const Center(
+                              child: Icon(
+                                Icons.image,
+                                size: 40,
+                                color: AppColors.grey,
+                              ),
+                            ),
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          color: AppColors.border,
+                          child: const Center(
+                            child: Icon(
+                              Icons.image,
+                              size: 40,
+                              color: AppColors.grey,
+                            ),
+                          ),
+                        ),
+                      ),
           ),
           // 하단 그라데이션 + 텍스트
           Positioned(
