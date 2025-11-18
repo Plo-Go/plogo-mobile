@@ -118,7 +118,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
             if (Navigator.of(context).canPop()) {
               context.pop();
             } else {
-              context.go('/home');
+              // 하단바 경로로 이동 (예시: /home, /search, /my 등)
+              context.go('/home'); // 원하는 하단바 경로로 수정 가능
             }
           },
         ),

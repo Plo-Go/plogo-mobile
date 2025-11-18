@@ -39,7 +39,7 @@ class CourseListView extends StatelessWidget {
                     final course = courses[i];
                     return GestureDetector(
                       onTap: () {
-                        // 상세페이지 이동 (GoRouter)
+                        // 상세페이지 이동
                         // 현재 route에 따라 상세페이지 경로 결정
                         final location =
                             GoRouterState.of(context).matchedLocation;
@@ -51,7 +51,7 @@ class CourseListView extends StatelessWidget {
                         } else {
                           detailRoute = '/home/detail/${course.courseId}';
                         }
-                        context.go(detailRoute, extra: course.name);
+                        context.push(detailRoute, extra: course.name);
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(
