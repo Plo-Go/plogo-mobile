@@ -16,6 +16,7 @@ class CourseDetailService {
       return null;
     }
   }
+
   Future<CourseDetailResponse> getCourseDetail(int courseId) async {
     try {
       final response = await _dio.get('/course/detail/$courseId');

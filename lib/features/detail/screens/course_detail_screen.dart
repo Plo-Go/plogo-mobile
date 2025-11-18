@@ -6,7 +6,6 @@ import 'package:plogo/features/detail/widgets/course_posts_section.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-
 class CourseDetailScreen extends StatefulWidget {
   final int courseId;
   final String? title;
@@ -21,8 +20,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
 
   Future<void> _fetchCoursePosts() async {
     try {
-      final response = await CourseDetailService().getCoursePosts(widget.courseId);
-      if (response != null && response['isSuccess'] == true && response['data'] is List) {
+      final response =
+          await CourseDetailService().getCoursePosts(widget.courseId);
+      if (response != null &&
+          response['isSuccess'] == true &&
+          response['data'] is List) {
         setState(() {
           coursePosts = List<Map<String, dynamic>>.from(response['data']);
         });
@@ -37,11 +39,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
       });
     }
   }
-    bool _showFullSummary = false;
-    Widget _buildSummary(String summary) {
-      const int maxLines = 5;
-      final int lineCount = summary.split('\n').length;
-      final bool isLong = lineCount > maxLines || summary.length > 120;
+
+  bool _showFullSummary = false;
+  Widget _buildSummary(String summary) {
+    const int maxLines = 5;
+    final int lineCount = summary.split('\n').length;
+    final bool isLong = lineCount > maxLines || summary.length > 120;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -83,7 +86,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   void initState() {
     super.initState();
     _fetchDetail();
-  _fetchCoursePosts();
+    _fetchCoursePosts();
   }
 
   Future<void> _fetchDetail() async {
@@ -190,9 +193,14 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Padding(
-                                      padding: EdgeInsets.only(top: 20, bottom: 24, left: 24, right: 24),
+                                      padding: EdgeInsets.only(
+                                          top: 20,
+                                          bottom: 24,
+                                          left: 24,
+                                          right: 24),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           _buildSummary(detail!.summary),
                                           SizedBox(height: 12),
@@ -207,8 +215,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                               SizedBox(width: 8),
                                               Expanded(
                                                 child: Text(
-                                                  detail!.address.isNotEmpty ? detail!.address : '-',
-                                                  style: TextStyle(fontSize: 12, color: AppColors.grey),
+                                                  detail!.address.isNotEmpty
+                                                      ? detail!.address
+                                                      : '-',
+                                                  style: TextStyle(
+                                                      fontSize: 12,
+                                                      color: AppColors.grey),
                                                 ),
                                               ),
                                             ],
@@ -226,8 +238,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                                 SizedBox(width: 8),
                                                 Expanded(
                                                   child: Text(
-                                                    detail!.charge.isNotEmpty ? detail!.charge : '-',
-                                                    style: TextStyle(fontSize: 12, color: AppColors.grey),
+                                                    detail!.charge.isNotEmpty
+                                                        ? detail!.charge
+                                                        : '-',
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: AppColors.grey),
                                                   ),
                                                 ),
                                               ],
@@ -247,7 +263,9 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                                 Expanded(
                                                   child: Text(
                                                     '-',
-                                                    style: TextStyle(fontSize: 12, color: AppColors.grey),
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: AppColors.grey),
                                                   ),
                                                 ),
                                               ],
@@ -266,8 +284,12 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                                 SizedBox(width: 8),
                                                 Expanded(
                                                   child: Text(
-                                                    detail!.tel.isNotEmpty ? detail!.tel : '-',
-                                                    style: TextStyle(fontSize: 12, color: AppColors.grey),
+                                                    detail!.tel.isNotEmpty
+                                                        ? detail!.tel
+                                                        : '-',
+                                                    style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: AppColors.grey),
                                                   ),
                                                 ),
                                               ],
@@ -286,15 +308,26 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                                 Expanded(
                                                   child: InkWell(
                                                     onTap: () async {
-                                                      final url = detail!.homepage;
-                                                      if (url.isNotEmpty && await canLaunchUrl(Uri.parse(url))) {
-                                                        await launchUrl(Uri.parse(url));
+                                                      final url =
+                                                          detail!.homepage;
+                                                      if (url.isNotEmpty &&
+                                                          await canLaunchUrl(
+                                                              Uri.parse(url))) {
+                                                        await launchUrl(
+                                                            Uri.parse(url));
                                                       }
                                                     },
                                                     child: Text(
-                                                      detail!.homepage.isNotEmpty ? detail!.homepage : '-',
-                                                      style: TextStyle(fontSize: 12, color: AppColors.grey,),
-                                                      overflow: TextOverflow.ellipsis,
+                                                      detail!.homepage
+                                                              .isNotEmpty
+                                                          ? detail!.homepage
+                                                          : '-',
+                                                      style: TextStyle(
+                                                        fontSize: 12,
+                                                        color: AppColors.grey,
+                                                      ),
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
                                                     ),
                                                   ),
                                                 ),
@@ -310,8 +343,10 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                       height: 8,
                                       color: AppColors.greyLight,
                                     ),
-                                      // 관련 포스팅 영역
-                                      CoursePostsSection(coursePosts: coursePosts, courseName: detail?.name ?? ''),
+                                    // 관련 포스팅 영역
+                                    CoursePostsSection(
+                                        coursePosts: coursePosts,
+                                        courseName: detail?.name ?? ''),
                                   ],
                                 ),
                               ],

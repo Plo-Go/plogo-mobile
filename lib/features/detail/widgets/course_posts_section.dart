@@ -5,7 +5,8 @@ import 'package:url_launcher/url_launcher.dart';
 class CoursePostsSection extends StatelessWidget {
   final List<Map<String, dynamic>> coursePosts;
   final String courseName;
-  const CoursePostsSection({super.key, required this.coursePosts, required this.courseName});
+  const CoursePostsSection(
+      {super.key, required this.coursePosts, required this.courseName});
 
   @override
   Widget build(BuildContext context) {
@@ -24,31 +25,88 @@ class CoursePostsSection extends StatelessWidget {
     }
 
     Widget buildTitle(String title) {
-      if (courseName.isNotEmpty && title.contains(courseName)) {
-        final parts = title.split(courseName);
-        return RichText(
-          text: TextSpan(
-            children: [
-              TextSpan(text: parts[0], style: TextStyle(fontSize: 15, color: AppColors.black, fontWeight: FontWeight.bold)),
-              TextSpan(text: courseName, style: TextStyle(fontSize: 15, color: AppColors.primary, fontWeight: FontWeight.bold)),
-              if (parts.length > 1)
-                TextSpan(text: parts[1], style: TextStyle(fontSize: 15, color: AppColors.black, fontWeight: FontWeight.bold)),
-            ],
-          ),
-        );
-      } else {
+      if (courseName.isEmpty) {
         return Text(
           title,
-          style: TextStyle(fontSize: 15, color: AppColors.primary, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 15,
+            color: AppColors.black,
+            fontWeight: FontWeight.bold,
+          ),
         );
       }
+
+      // 공백 제거 버전 (매칭용)
+      final cleanTitle = title.replaceAll(' ', '');
+      final cleanQuery = courseName.replaceAll(' ', '');
+
+      final startIndex = cleanTitle.indexOf(cleanQuery);
+      if (startIndex == -1) {
+        return Text(
+          title,
+          style: TextStyle(
+            fontSize: 15,
+            color: AppColors.black,
+            fontWeight: FontWeight.bold,
+          ),
+        );
+      }
+
+      // 공백 제거 인덱스를 실제 title 인덱스로 변환
+      int convertCleanToRaw(int cleanIndex) {
+        int count = 0;
+        int rawIndex = 0;
+
+        while (rawIndex < title.length && count < cleanIndex) {
+          if (title[rawIndex] != ' ') {
+            count++;
+          }
+          rawIndex++;
+        }
+        return rawIndex;
+      }
+
+      final realStart = convertCleanToRaw(startIndex);
+      final realEnd = convertCleanToRaw(startIndex + cleanQuery.length);
+
+      return RichText(
+        text: TextSpan(
+          children: [
+            TextSpan(
+              text: title.substring(0, realStart),
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextSpan(
+              text: title.substring(realStart, realEnd),
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColors.primary,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            TextSpan(
+              text: title.substring(realEnd),
+              style: TextStyle(
+                fontSize: 15,
+                color: AppColors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      );
     }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 20.0, bottom: 20.0, left: 24.0, right: 24.0),
+          padding: const EdgeInsets.only(
+              top: 20.0, bottom: 20.0, left: 24.0, right: 24.0),
           child: Text(
             '관련 포스팅',
             style: TextStyle(
@@ -61,7 +119,8 @@ class CoursePostsSection extends StatelessWidget {
         ...coursePosts.map((post) {
           return Container(
             margin: const EdgeInsets.only(bottom: 0),
-            padding: const EdgeInsets.only(left: 24, right: 24, top: 0, bottom: 12),
+            padding:
+                const EdgeInsets.only(left: 24, right: 24, top: 0, bottom: 12),
             decoration: BoxDecoration(
               color: AppColors.white,
               borderRadius: BorderRadius.circular(12),
@@ -81,7 +140,8 @@ class CoursePostsSection extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    Text(' | ', style: TextStyle(fontSize: 12, color: AppColors.grey)),
+                    Text(' | ',
+                        style: TextStyle(fontSize: 12, color: AppColors.grey)),
                     Text(
                       formatDate(post['post_date']),
                       style: TextStyle(
