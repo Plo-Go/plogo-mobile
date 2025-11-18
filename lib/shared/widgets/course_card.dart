@@ -5,12 +5,14 @@ class CourseCard extends StatelessWidget {
   final String name;
   final String location;
   final String imagePath;
+  final VoidCallback? onTap;
 
   const CourseCard({
     super.key,
     required this.name,
     required this.location,
     required this.imagePath,
+    this.onTap,
   });
 
   @override
@@ -95,15 +97,18 @@ class CourseCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                  InkWell(
+                    onTap: onTap,
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(

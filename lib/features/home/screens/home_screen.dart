@@ -44,17 +44,18 @@ class HomeScreen extends StatelessWidget {
                           return Center(child: Text('추천 코스 불러오기 실패'));
                         }
                         final response = snapshot.data;
-                        final recommendedItems = (response?.data ?? [])
-                            .map((item) => {
-                                  'name': item.name,
-                                  'location': item.area,
-                                  'imagePath': (item.image == null ||
-                                          item.image.isEmpty ||
-                                          item.image == 'string')
-                                      ? ''
-                                      : item.image,
-                                })
-                            .toList();
+                          final recommendedItems = (response?.data ?? [])
+                              .map((item) => {
+                                    'courseId': item.courseId,
+                                    'name': item.name,
+                                    'location': item.area,
+                                    'imagePath': (item.image == null ||
+                                            item.image.isEmpty ||
+                                            item.image == 'string')
+                                        ? ''
+                                        : item.image,
+                                  })
+                              .toList();
                         return CourseSection(
                           title: '나를 위한 코스 추천',
                           subtitle: '선호도 기반으로 추천드리는 코스들이에요',
@@ -81,17 +82,18 @@ class HomeScreen extends StatelessWidget {
                           return Center(child: Text('핫한 코스 불러오기 실패'));
                         }
                         final hotResponse = hotSnapshot.data;
-                        final hotItems = (hotResponse?.data ?? [])
-                            .map((item) => {
-                                  'name': item.name,
-                                  'location': item.area,
-                                  'imagePath': (item.image == null ||
-                                          item.image.isEmpty ||
-                                          item.image == 'string')
-                                      ? ''
-                                      : item.image,
-                                })
-                            .toList();
+                          final hotItems = (hotResponse?.data ?? [])
+                              .map((item) => {
+                                    'courseId': item.courseId,
+                                    'name': item.name,
+                                    'location': item.area,
+                                    'imagePath': (item.image == null ||
+                                            item.image.isEmpty ||
+                                            item.image == 'string')
+                                        ? ''
+                                        : item.image,
+                                  })
+                              .toList();
                         return CourseSection(
                           title: '요즘 핫한 코스 추천',
                           subtitle: '최근 사용자들 사이에서 인기가 많아요',
