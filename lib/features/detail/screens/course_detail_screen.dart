@@ -310,8 +310,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                       height: 8,
                                       color: AppColors.greyLight,
                                     ),
-                                    // 관련 포스팅 영역
-                                    CoursePostsSection(coursePosts: coursePosts),
+                                      // 관련 포스팅 영역
+                                      CoursePostsSection(coursePosts: coursePosts, courseName: detail?.name ?? ''),
                                   ],
                                 ),
                               ],
