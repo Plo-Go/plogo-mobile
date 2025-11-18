@@ -111,31 +111,38 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios_new, color: AppColors.black),
-          onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              context.pop();
-            } else {
-              // 하단바 경로로 이동 (예시: /home, /search, /my 등)
-              context.go('/home'); // 원하는 하단바 경로로 수정 가능
-            }
-          },
-        ),
-        title: Text(widget.title ?? '',
-            style: const TextStyle(fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        actions: [
-          Icon(
-            isSave ? Icons.bookmark : Icons.bookmark_border,
-            color: AppColors.primary,
-            size: 28,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(68),
+        child: AppBar(
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back_ios_new, color: AppColors.black),
+            onPressed: () {
+              if (Navigator.of(context).canPop()) {
+                context.pop();
+              } else {
+                // 하단바 경로로 이동
+                context.go('/home'); // 수정 가능
+              }
+            },
           ),
-        ],
+          // 제목
+          title: Text(widget.title ?? '',
+              style: const TextStyle(fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          backgroundColor: AppColors.white,
+          elevation: 0,
+          scrolledUnderElevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 24),
+              child: Icon(
+                isSave ? Icons.bookmark : Icons.bookmark_border,
+                color: AppColors.primary,
+                size: 28,
+              ),
+            ),
+          ],
+        ),
       ),
       body: loading
           ? const Center(child: CircularProgressIndicator())
@@ -179,107 +186,133 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                       ),
                                     ],
                                   ),
-                                Padding(
-                                  padding: EdgeInsets.all(16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      _buildSummary(detail!.summary),
-                                      SizedBox(height: 12),
-                                      Row(
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.only(top: 20, bottom: 24, left: 24, right: 24),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          Icon(Icons.location_on_outlined,
-                                              size: 15, color: AppColors.grey),
-                                          SizedBox(width: 6),
-                                          Expanded(
-                                              child: Text(detail!.address,
-                                                  style: TextStyle(
-                                                      fontSize: 12,
-                                                      color: AppColors.grey))),
-                                        ],
-                                      ),
-                                      if (detail!.charge.isNotEmpty)
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 8),
-                                          child: Row(
+                                          _buildSummary(detail!.summary),
+                                          SizedBox(height: 12),
+                                          Row(
                                             children: [
-                                              Icon(Icons.wallet_outlined,
-                                                  size: 15,
-                                                  color: AppColors.grey),
-                                              SizedBox(width: 6),
+                                              Image.asset(
+                                                'assets/icons/detail_location.png',
+                                                width: 15,
+                                                height: 15,
+                                                color: AppColors.grey,
+                                              ),
+                                              SizedBox(width: 8),
                                               Expanded(
-                                                  child: Text(detail!.charge,
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: AppColors
-                                                              .grey))),
-                                            ],
-                                          ),
-                                        ),
-                                      if (detail!.tel.isNotEmpty)
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 8),
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.phone_outlined,
-                                                  size: 15,
-                                                  color: AppColors.grey),
-                                              SizedBox(width: 6),
-                                              Expanded(
-                                                  child: Text(detail!.tel,
-                                                      style: TextStyle(
-                                                          fontSize: 12,
-                                                          color: AppColors
-                                                              .grey))),
-                                            ],
-                                          ),
-                                        ),
-                                      if (detail!.homepage.isNotEmpty)
-                                        Padding(
-                                          padding: EdgeInsets.only(top: 8),
-                                          child: Row(
-                                            children: [
-                                              Icon(Icons.open_in_new,
-                                                  size: 15,
-                                                  color: AppColors.grey),
-                                              SizedBox(width: 6),
-                                              Expanded(
-                                                child: InkWell(
-                                                  onTap: () async {
-                                                    final url =
-                                                        detail!.homepage;
-                                                    if (await canLaunchUrl(
-                                                        Uri.parse(url))) {
-                                                      await launchUrl(
-                                                          Uri.parse(url));
-                                                    }
-                                                  },
-                                                  child: Text(
-                                                    detail!.homepage,
-                                                    style: TextStyle(
-                                                        fontSize: 12,
-                                                        color: AppColors.grey,
-                                                        decoration:
-                                                            TextDecoration
-                                                                .underline),
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                  ),
+                                                child: Text(
+                                                  detail!.address.isNotEmpty ? detail!.address : '-',
+                                                  style: TextStyle(fontSize: 12, color: AppColors.grey),
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ),
-                                      // 구분선
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 16.0),
-                                        child: Divider(thickness: 1, color: AppColors.grey.withOpacity(0.3)),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 8),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  'assets/icons/detail_price.png',
+                                                  width: 14,
+                                                  height: 14,
+                                                  color: AppColors.grey,
+                                                ),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    detail!.charge.isNotEmpty ? detail!.charge : '-',
+                                                    style: TextStyle(fontSize: 12, color: AppColors.grey),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 8),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  'assets/icons/detail_time.png',
+                                                  width: 14,
+                                                  height: 14,
+                                                  color: AppColors.grey,
+                                                ),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    '-',
+                                                    style: TextStyle(fontSize: 12, color: AppColors.grey),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 8),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  'assets/icons/detail_contact.png',
+                                                  width: 18,
+                                                  height: 18,
+                                                  color: AppColors.black,
+                                                ),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                  child: Text(
+                                                    detail!.tel.isNotEmpty ? detail!.tel : '-',
+                                                    style: TextStyle(fontSize: 12, color: AppColors.grey),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: EdgeInsets.only(top: 8),
+                                            child: Row(
+                                              children: [
+                                                Image.asset(
+                                                  'assets/icons/detail_homepage.png',
+                                                  width: 14,
+                                                  height: 12,
+                                                ),
+                                                SizedBox(width: 8),
+                                                Expanded(
+                                                  child: InkWell(
+                                                    onTap: () async {
+                                                      final url = detail!.homepage;
+                                                      if (url.isNotEmpty && await canLaunchUrl(Uri.parse(url))) {
+                                                        await launchUrl(Uri.parse(url));
+                                                      }
+                                                    },
+                                                    child: Text(
+                                                      detail!.homepage.isNotEmpty ? detail!.homepage : '-',
+                                                      style: TextStyle(fontSize: 12, color: AppColors.grey,),
+                                                      overflow: TextOverflow.ellipsis,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                      // 관련 포스팅 영역
-                                      CoursePostsSection(coursePosts: coursePosts),
-                                    ],
-                                  ),
+                                    ),
+                                    // 구분선 (양옆 여백 없이 Container)
+                                    Container(
+                                      width: MediaQuery.of(context).size.width,
+                                      height: 8,
+                                      color: AppColors.greyLight,
+                                    ),
+                                    // 관련 포스팅 영역
+                                    CoursePostsSection(coursePosts: coursePosts),
+                                  ],
                                 ),
                               ],
                             ),
