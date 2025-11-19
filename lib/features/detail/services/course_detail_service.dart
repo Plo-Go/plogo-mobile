@@ -22,7 +22,7 @@ class CourseDetailService {
       final response = await _dio.get('/course/detail/$courseId');
       final detailResponse = CourseDetailResponse.fromJson(response.data);
       final detail = detailResponse.data;
-      print('[CourseDetail] courseId: [32m${detail.courseId}[0m');
+      print('[CourseDetail] courseId: ${detail.courseId}');
       print('[CourseDetail] name: ${detail.name}');
       print('[CourseDetail] image: ${detail.image}');
       print('[CourseDetail] summary: ${detail.summary}');
@@ -38,6 +38,17 @@ class CourseDetailService {
       throw Exception('코스 상세 조회 실패: ${e.message}');
     } catch (e) {
       throw Exception('코스 상세 조회 실패: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>?> toggleSaveCourse(int courseId) async {
+    try {
+      final response = await _dio.post('/course/save/$courseId');
+      print('[CourseSave] 응답: ${response.data}');
+      return response.data;
+    } catch (e) {
+      print('[CourseSave] 에러: $e');
+      return null;
     }
   }
 }

@@ -65,6 +65,7 @@ class CourseSection extends StatelessWidget {
                   name: item['name']?.toString() ?? '이름',
                   location: item['location']?.toString() ?? '위치',
                   imagePath: item['imagePath']?.toString() ?? 'assets/images/sample.png',
+                  isSave: item['isSave'] == true,
                   onTap: () {
                     final courseId = item['courseId'];
                     final name = item['name']?.toString() ?? '';

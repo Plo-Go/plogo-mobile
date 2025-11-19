@@ -5,6 +5,7 @@ class CourseCard extends StatelessWidget {
   final String name;
   final String location;
   final String imagePath;
+  final bool isSave;
   final VoidCallback? onTap;
 
   const CourseCard({
@@ -12,14 +13,15 @@ class CourseCard extends StatelessWidget {
     required this.name,
     required this.location,
     required this.imagePath,
+    required this.isSave,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-  final isNetworkImage =
-    imagePath.startsWith('http://') || imagePath.startsWith('https://');
-  final isEmptyImage = imagePath.isEmpty || imagePath == 'string';
+    final isNetworkImage =
+      imagePath.startsWith('http://') || imagePath.startsWith('https://');
+    final isEmptyImage = imagePath.isEmpty || imagePath == 'string';
     return Container(
       width: 128,
       height: 128,
@@ -107,12 +109,12 @@ class CourseCard extends StatelessWidget {
             ),
           ),
           // 북마크 아이콘 (배경 없음)
-          const Positioned(
+          Positioned(
             top: 8,
             right: 8,
             child: Icon(
-              Icons.bookmark_border,
-              color: Colors.white,
+              isSave ? Icons.bookmark : Icons.bookmark_border,
+              color: isSave ? Colors.white : AppColors.white,
               size: 24,
             ),
           ),

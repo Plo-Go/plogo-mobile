@@ -19,6 +19,7 @@ class MyPageScreen extends StatefulWidget {
 
 class _MyPageScreenState extends State<MyPageScreen> {
   Map<String, dynamic>? userInfo;
+  List<Map<String, dynamic>> savedCourses = [];
   bool loading = true;
   String? error;
 
@@ -26,6 +27,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
   void initState() {
     super.initState();
     _fetchUserInfo();
+    _fetchSavedCourses();
   }
 
   Future<void> _fetchUserInfo() async {
@@ -48,26 +50,21 @@ class _MyPageScreenState extends State<MyPageScreen> {
     }
   }
 
+  Future<void> _fetchSavedCourses() async {
+    try {
+      final service = MyPageService(apiClient.dio);
+      final items = await service.getSavedCourses();
+      setState(() {
+        savedCourses = items;
+      });
+    } catch (e) {
+      print('[저장 코스 목록 에러] $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // 임시 목업 데이터 (API 연동 전)
-    final saved = [
-      {
-        'name': '문경새재 도립공원',
-        'location': '경상북도 | 공원',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '안양천 생태아이가든',
-        'location': '경기도 | 산',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '주왕산 국립공원',
-        'location': '경북 | 산',
-        'imagePath': 'assets/images/sample.png',
-      },
-    ];
+    // 저장 코스 목록 (API 연동)
 
     return SingleChildScrollView(
       child: Column(
@@ -104,7 +101,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
 
           // 저장 목록 섹션
           SavedCoursesSection(
-            items: saved,
+            items: savedCourses,
             onSeeAll: () {},
           ),
           const SizedBox(height: 32),

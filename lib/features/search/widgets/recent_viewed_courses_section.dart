@@ -53,6 +53,7 @@ class RecentViewedCoursesSection extends StatelessWidget {
                   name: item['name'] ?? '이름',
                   location: item['location'] ?? '위치',
                   imagePath: item['imagePath'] ?? 'assets/images/sample.png',
+                  isSave: item['isSave'] == true,
                 );
               },
             ),

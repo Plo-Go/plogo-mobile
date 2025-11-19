@@ -4,7 +4,7 @@ import 'package:plogo/shared/widgets/course_card.dart';
 
 class SavedCoursesSection extends StatelessWidget {
   final VoidCallback? onSeeAll;
-  final List<Map<String, String>> items; // [{name, location, imagePath}]
+  final List<Map<String, dynamic>> items; // [{name, area, image, ...}]
 
   const SavedCoursesSection({
     super.key,
@@ -94,8 +94,9 @@ class SavedCoursesSection extends StatelessWidget {
                 final item = items[i];
                 return CourseCard(
                   name: item['name'] ?? '이름',
-                  location: item['location'] ?? '위치',
-                  imagePath: item['imagePath'] ?? 'assets/images/sample.png',
+                  location: item['area'] ?? '위치',
+                  imagePath: item['image'] ?? 'assets/images/sample.png',
+                  isSave: item['isSave'] == true,
                 );
               },
             ),
