@@ -160,35 +160,39 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                if (detail!.image.isNotEmpty)
-                                  Stack(
-                                    children: [
-                                      Image.network(
-                                        detail!.image,
-                                        width: double.infinity,
-                                        height: 200,
-                                        fit: BoxFit.cover,
-                                      ),
-                                      Positioned(
-                                        right: 16,
-                                        bottom: 16,
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              horizontal: 8, vertical: 4),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Colors.black.withOpacity(0.5),
-                                            borderRadius:
-                                                BorderRadius.circular(8),
+                                Stack(
+                                  children: [
+                                    detail!.image.isNotEmpty
+                                        ? Image.network(
+                                            detail!.image,
+                                            width: double.infinity,
+                                            height: 200,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Image.asset(
+                                            'assets/images/no_image.png',
+                                            width: double.infinity,
+                                            height: 200,
+                                            fit: BoxFit.cover,
                                           ),
-                                          child: Text('1/1',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12)),
+                                    Positioned(
+                                      right: 16,
+                                      bottom: 16,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 8, vertical: 4),
+                                        decoration: BoxDecoration(
+                                          color: Colors.black.withOpacity(0.5),
+                                          borderRadius: BorderRadius.circular(8),
                                         ),
+                                        child: Text('1/1',
+                                            style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12)),
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
+                                ),
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
