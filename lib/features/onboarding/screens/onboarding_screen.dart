@@ -109,7 +109,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                       .read(onboardingProvider.notifier)
                                       .submit(dio);
                                   debugPrint('[온보딩 완료] 선호도 저장 결과: $isSuccess');
-                                  context.go('/onboarding-complete');
+                                  if (context.mounted) {
+                                    context.go('/onboarding-complete');
+                                  }
                                 }
                               }
                             : null,

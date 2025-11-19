@@ -138,10 +138,23 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 24),
-              child: Icon(
-                isSave ? Icons.bookmark : Icons.bookmark_border,
-                color: AppColors.primary,
-                size: 28,
+              child: IconButton(
+                icon: Icon(
+                  isSave ? Icons.bookmark : Icons.bookmark_border,
+                  color: AppColors.primary,
+                  size: 28,
+                ),
+                onPressed: () async {
+                  final response = await CourseDetailService()
+                      .toggleSaveCourse(widget.courseId);
+                  if (response != null &&
+                      response['isSuccess'] == true &&
+                      response['data'] != null) {
+                    setState(() {
+                      isSave = response['data']['isSave'] ?? false;
+                    });
+                  }
+                },
               ),
             ),
           ],
@@ -183,7 +196,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                             horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
                                           color: Colors.black.withOpacity(0.5),
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
                                         child: Text('1/1',
                                             style: TextStyle(

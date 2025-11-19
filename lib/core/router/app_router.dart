@@ -1,3 +1,4 @@
+import 'package:plogo/features/mypage/screens/saved_courses_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:plogo/features/region/screens/region_list.dart';
@@ -86,6 +87,10 @@ final appRouter = GoRouter(
           path: '/mypage',
           pageBuilder: (context, state) =>
               const NoTransitionPage(child: MyPageScreen()),
+        ),
+        GoRoute(
+          path: '/mypage/saved-courses',
+          builder: (context, state) => const SavedCoursesListScreen(),
         ),
         GoRoute(
           path: '/home/detail/:courseId',

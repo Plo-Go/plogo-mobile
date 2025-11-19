@@ -6,7 +6,8 @@ import 'package:go_router/go_router.dart';
 class CourseSection extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final List<Map<String, Object>> items; // [{courseId, name, location, imagePath}]
+  final List<Map<String, Object>>
+      items; // [{courseId, name, location, imagePath}]
 
   const CourseSection({
     super.key,
@@ -64,7 +65,9 @@ class CourseSection extends StatelessWidget {
                 return CourseCard(
                   name: item['name']?.toString() ?? '이름',
                   location: item['location']?.toString() ?? '위치',
-                  imagePath: item['imagePath']?.toString() ?? 'assets/images/sample.png',
+                  imagePath: item['imagePath']?.toString() ??
+                      'assets/images/sample.png',
+                  isSave: item['isSave'] == true,
                   onTap: () {
                     final courseId = item['courseId'];
                     final name = item['name']?.toString() ?? '';

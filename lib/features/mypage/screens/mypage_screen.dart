@@ -4,33 +4,80 @@ import 'package:plogo/features/mypage/widgets/saved_courses_section.dart';
 import 'package:plogo/features/search/widgets/recent_viewed_courses_section.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:plogo/features/auth/services/token_storage.dart';
+import 'package:plogo/features/auth/services/auth_service.dart';
 import 'package:plogo/features/mypage/services/mypage_service.dart';
 import 'package:plogo/core/api/api_client.dart';
 import 'package:go_router/go_router.dart';
 
-class MyPageScreen extends StatelessWidget {
+class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
 
   @override
+  State<MyPageScreen> createState() => _MyPageScreenState();
+}
+
+class _MyPageScreenState extends State<MyPageScreen> {
+  Map<String, dynamic>? userInfo;
+  List<Map<String, dynamic>> savedCourses = [];
+  List<Map<String, dynamic>> recentCourses = [];
+  bool loading = true;
+  String? error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserInfo();
+    _fetchSavedCourses();
+    _fetchRecentCourses();
+  }
+
+  Future<void> _fetchRecentCourses() async {
+    try {
+      final service = MyPageService(apiClient.dio);
+      final items = await service.getRecentCourses();
+      setState(() {
+        recentCourses = items;
+      });
+    } catch (e) {
+      print('[최근 확인한 코스 에러] $e');
+    }
+  }
+
+  Future<void> _fetchUserInfo() async {
+    setState(() {
+      loading = true;
+      error = null;
+    });
+    try {
+      final response = await AuthService().getUserInfo();
+      print('[유저 정보] ${response.data}');
+      setState(() {
+        userInfo = response.data as Map<String, dynamic>?;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = '유저 정보 불러오기 실패';
+        loading = false;
+      });
+    }
+  }
+
+  Future<void> _fetchSavedCourses() async {
+    try {
+      final service = MyPageService(apiClient.dio);
+      final items = await service.getSavedCourses();
+      setState(() {
+        savedCourses = items;
+      });
+    } catch (e) {
+      print('[저장 코스 목록 에러] $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // 임시 목업 데이터 (API 연동 전)
-    final saved = [
-      {
-        'name': '문경새재 도립공원',
-        'location': '경상북도 | 공원',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '안양천 생태아이가든',
-        'location': '경기도 | 산',
-        'imagePath': 'assets/images/sample.png',
-      },
-      {
-        'name': '주왕산 국립공원',
-        'location': '경북 | 산',
-        'imagePath': 'assets/images/sample.png',
-      },
-    ];
+    // 저장 코스 목록 (API 연동)
 
     return SingleChildScrollView(
       child: Column(
@@ -38,11 +85,25 @@ class MyPageScreen extends StatelessWidget {
         children: [
           const SizedBox(height: 48),
           // 상단 프로필 영역
-          const ProfileHeader(
-            nickname: '닉네임',
-            level: 1,
-            levelLabel: '새싹 플로거',
-          ),
+          if (loading)
+            const Center(child: CircularProgressIndicator())
+          else if (error != null)
+            Center(child: Text(error!))
+          else if (userInfo != null)
+            ProfileHeader(
+              nickname: userInfo!['nickname'] ?? '닉네임',
+              level: int.tryParse(userInfo!['level'] ?? '1') ?? 1,
+              levelLabel: userInfo!['level'] ?? '새싹 플로거',
+              profileImg: userInfo!['profileImg'] ?? '',
+              stampCount: userInfo!['stampCount'] ?? 0,
+            )
+          else
+            const ProfileHeader(
+              nickname: '닉네임',
+              level: 1,
+              levelLabel: '새싹 플로거',
+              stampCount: 0,
+            ),
           const SizedBox(height: 36),
           Container(
             width: MediaQuery.of(context).size.width,
@@ -53,14 +114,32 @@ class MyPageScreen extends StatelessWidget {
 
           // 저장 목록 섹션
           SavedCoursesSection(
-            items: saved,
-            onSeeAll: () {},
+            items: savedCourses,
+            onSeeAll: _fetchSavedCourses,
+            // 카드 클릭 시 새로고침을 위해 콜백 전달
+            onCardTap: (courseId, name) async {
+              await context.push('/home/detail/$courseId', extra: name);
+              _fetchUserInfo();
+              _fetchSavedCourses();
+              _fetchRecentCourses();
+            },
           ),
           const SizedBox(height: 32),
 
-          // 최근 확인한 코스 섹션 (검색 화면의 섹션 재사용)
-          const RecentViewedCoursesSection(
-            items: [], // 빈 리스트로 테스트, 추후 실제 데이터 연동
+          // 최근 확인한 코스 섹션
+          RecentViewedCoursesSection(
+            items: recentCourses,
+            onRefresh: () async {
+              // 카드 클릭 시 새로고침을 위해 콜백 전달
+              _fetchRecentCourses();
+              _fetchSavedCourses();
+            },
+            onCardTap: (courseId, name) async {
+              await context.push('/home/detail/$courseId', extra: name);
+              _fetchUserInfo();
+              _fetchSavedCourses();
+              _fetchRecentCourses();
+            },
           ),
           const SizedBox(height: 20),
           Container(
@@ -92,7 +171,7 @@ class MyPageScreen extends StatelessWidget {
                           TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     ),
                     onTap: () {
-                      // TODO: 온보딩 선호도 질문으로 이동
+                      context.go('/onboarding');
                     },
                   ),
                   const SizedBox(height: 6),
@@ -123,6 +202,7 @@ class MyPageScreen extends StatelessWidget {
                       context.go('/splash');
                     },
                   ),
+                  const SizedBox(height: 12),
                 ],
               ),
             ),

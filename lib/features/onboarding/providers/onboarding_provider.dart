@@ -52,6 +52,8 @@ class OnboardingNotifier extends Notifier<List<List<String>>> {
 
   Future<bool> submit(Dio dio) async {
     final body = toApiRequestBody();
+    debugPrint('[선호도 저장 API] 요청 body: $body');
+    debugPrint('[선호도 저장 API] dio headers: ${dio.options.headers}');
     try {
       final response = await dio.post('/course/analyze', data: body);
       final isSuccess = response.data['isSuccess'] == true;
