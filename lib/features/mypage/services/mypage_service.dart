@@ -4,6 +4,12 @@ import 'package:plogo/features/auth/models/auth_models.dart';
 
 /// 마이페이지 관련 API 서비스
 class MyPageService {
+  Future<List<Map<String, dynamic>>> getRecentCourses() async {
+    print('[최근 확인한 코스 API 요청] /course/recent');
+    final response = await _dio.get('/course/recent');
+    print('[최근 확인한 코스 API 응답] ${response.data}');
+    return List<Map<String, dynamic>>.from(response.data['data'] ?? []);
+  }
   final Dio _dio;
   MyPageService(this._dio);
 

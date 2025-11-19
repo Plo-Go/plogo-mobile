@@ -3,7 +3,7 @@ import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:plogo/shared/widgets/course_card.dart';
 
 class RecentViewedCoursesSection extends StatelessWidget {
-  final List<Map<String, String>> items; // [{name, location, imagePath}]
+  final List<Map<String, dynamic>> items; // [{name, area, image, isSave}]
 
   const RecentViewedCoursesSection({
     super.key,
@@ -51,8 +51,8 @@ class RecentViewedCoursesSection extends StatelessWidget {
                 final item = items[i];
                 return CourseCard(
                   name: item['name'] ?? '이름',
-                  location: item['location'] ?? '위치',
-                  imagePath: item['imagePath'] ?? 'assets/images/sample.png',
+                  location: item['area'] ?? item['location'] ?? '위치',
+                  imagePath: item['image'] ?? item['imagePath'] ?? 'assets/images/sample.png',
                   isSave: item['isSave'] == true,
                 );
               },

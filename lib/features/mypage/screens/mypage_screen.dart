@@ -19,6 +19,7 @@ class MyPageScreen extends StatefulWidget {
 class _MyPageScreenState extends State<MyPageScreen> {
   Map<String, dynamic>? userInfo;
   List<Map<String, dynamic>> savedCourses = [];
+  List<Map<String, dynamic>> recentCourses = [];
   bool loading = true;
   String? error;
 
@@ -27,6 +28,19 @@ class _MyPageScreenState extends State<MyPageScreen> {
     super.initState();
     _fetchUserInfo();
     _fetchSavedCourses();
+    _fetchRecentCourses();
+  }
+
+  Future<void> _fetchRecentCourses() async {
+    try {
+      final service = MyPageService(apiClient.dio);
+      final items = await service.getRecentCourses();
+      setState(() {
+        recentCourses = items;
+      });
+    } catch (e) {
+      print('[최근 확인한 코스 에러] $e');
+    }
   }
 
   Future<void> _fetchUserInfo() async {
@@ -105,9 +119,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
           ),
           const SizedBox(height: 32),
 
-          // 최근 확인한 코스 섹션 (검색 화면의 섹션 재사용)
-          const RecentViewedCoursesSection(
-            items: [], // 빈 리스트로 테스트, 추후 실제 데이터 연동
+          // 최근 확인한 코스 섹션 (API 연동)
+          RecentViewedCoursesSection(
+            items: recentCourses,
           ),
           const SizedBox(height: 20),
           Container(
