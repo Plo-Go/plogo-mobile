@@ -20,7 +20,7 @@ class CourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isNetworkImage =
-      imagePath.startsWith('http://') || imagePath.startsWith('https://');
+        imagePath.startsWith('http://') || imagePath.startsWith('https://');
     final isEmptyImage = imagePath.isEmpty || imagePath == 'string';
     return Container(
       width: 128,
@@ -54,7 +54,8 @@ class CourseCard extends StatelessWidget {
                     : Image.asset(
                         imagePath,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Image.asset(
+                        errorBuilder: (context, error, stackTrace) =>
+                            Image.asset(
                           'assets/images/no_image.png',
                           fit: BoxFit.cover,
                         ),

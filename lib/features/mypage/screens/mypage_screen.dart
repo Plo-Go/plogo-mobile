@@ -9,7 +9,6 @@ import 'package:plogo/features/mypage/services/mypage_service.dart';
 import 'package:plogo/core/api/api_client.dart';
 import 'package:go_router/go_router.dart';
 
-
 class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
 
@@ -102,7 +101,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
           // 저장 목록 섹션
           SavedCoursesSection(
             items: savedCourses,
-            onSeeAll: () {},
+            onSeeAll: _fetchSavedCourses,
           ),
           const SizedBox(height: 32),
 

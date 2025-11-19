@@ -12,7 +12,9 @@ class MyPageService {
     try {
       final response = await _dio.get('/course/save_list');
       print('[SavedCourses] 응답: ${response.data}');
-      if (response.data != null && response.data['isSuccess'] == true && response.data['data'] is List) {
+      if (response.data != null &&
+          response.data['isSuccess'] == true &&
+          response.data['data'] is List) {
         return List<Map<String, dynamic>>.from(response.data['data']);
       }
       return [];

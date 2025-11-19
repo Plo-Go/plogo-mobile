@@ -145,8 +145,11 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                   size: 28,
                 ),
                 onPressed: () async {
-                  final response = await CourseDetailService().toggleSaveCourse(widget.courseId);
-                  if (response != null && response['isSuccess'] == true && response['data'] != null) {
+                  final response = await CourseDetailService()
+                      .toggleSaveCourse(widget.courseId);
+                  if (response != null &&
+                      response['isSuccess'] == true &&
+                      response['data'] != null) {
                     setState(() {
                       isSave = response['data']['isSave'] ?? false;
                     });
@@ -193,7 +196,8 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                             horizontal: 8, vertical: 4),
                                         decoration: BoxDecoration(
                                           color: Colors.black.withOpacity(0.5),
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                         ),
                                         child: Text('1/1',
                                             style: TextStyle(

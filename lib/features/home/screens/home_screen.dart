@@ -35,8 +35,10 @@ class HomeScreen extends StatelessWidget {
                     FutureBuilder<CourseRecommendResponse>(
                       future: RecommendService().getRecommendedCourses(),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
                         if (snapshot.hasError) {
                           return Center(child: Text('추천 코스 불러오기 실패'));
@@ -47,7 +49,9 @@ class HomeScreen extends StatelessWidget {
                                   'courseId': item.courseId,
                                   'name': item.name,
                                   'location': item.area,
-                                  'imagePath': (item.image == null || item.image.isEmpty || item.image == 'string')
+                                  'imagePath': (item.image == null ||
+                                          item.image.isEmpty ||
+                                          item.image == 'string')
                                       ? ''
                                       : item.image,
                                   'isSave': item.isSave == true,
@@ -70,8 +74,10 @@ class HomeScreen extends StatelessWidget {
                     FutureBuilder<CourseRecommendResponse>(
                       future: HotCourseService().getHotCourses(),
                       builder: (context, hotSnapshot) {
-                        if (hotSnapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (hotSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         }
                         if (hotSnapshot.hasError) {
                           return Center(child: Text('핫한 코스 불러오기 실패'));
@@ -82,7 +88,9 @@ class HomeScreen extends StatelessWidget {
                                   'courseId': item.courseId,
                                   'name': item.name,
                                   'location': item.area,
-                                  'imagePath': (item.image == null || item.image.isEmpty || item.image == 'string')
+                                  'imagePath': (item.image == null ||
+                                          item.image.isEmpty ||
+                                          item.image == 'string')
                                       ? ''
                                       : item.image,
                                   'isSave': item.isSave == true,

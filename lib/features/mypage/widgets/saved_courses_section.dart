@@ -32,7 +32,12 @@ class SavedCoursesSection extends StatelessWidget {
               ),
               if (items.isNotEmpty)
                 TextButton(
-                  onPressed: onSeeAll,
+                  onPressed: () async {
+                    final result = await context.push('/mypage/saved-courses');
+                    if (result == true && onSeeAll != null) {
+                      onSeeAll!(); // 저장목록 섹션 새로고침
+                    }
+                  },
                   style: TextButton.styleFrom(
                     padding: EdgeInsets.zero,
                     minimumSize: const Size(0, 0),

@@ -49,7 +49,8 @@ class ProfileHeader extends StatelessWidget {
                         profileImg!,
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) =>
-                            const Icon(Icons.person, color: AppColors.grey, size: 32),
+                            const Icon(Icons.person,
+                                color: AppColors.grey, size: 32),
                       )
                     : const Icon(Icons.person, color: AppColors.grey, size: 32),
               ),
@@ -107,7 +108,8 @@ class ProfileHeader extends StatelessWidget {
                                 ? BoxDecoration(
                                     boxShadow: [
                                       BoxShadow(
-                                        color: AppColors.primary.withOpacity(0.16),
+                                        color:
+                                            AppColors.primary.withOpacity(0.16),
                                         blurRadius: 8,
                                         offset: const Offset(0, 4),
                                       ),
@@ -123,10 +125,13 @@ class ProfileHeader extends StatelessWidget {
                                 width: size,
                                 height: size,
                                 fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) => Icon(
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(
                                   Icons.flag,
                                   size: size,
-                                  color: filled ? AppColors.primary : AppColors.greyLight,
+                                  color: filled
+                                      ? AppColors.primary
+                                      : AppColors.greyLight,
                                 ),
                               ),
                             ),
