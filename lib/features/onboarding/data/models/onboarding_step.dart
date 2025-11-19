@@ -9,4 +9,3 @@ class OnboardingStep {
     required this.options,
   });
 }
-

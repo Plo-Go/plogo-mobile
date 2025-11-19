@@ -11,10 +11,12 @@ class OnboardingCompleteScreen extends ConsumerStatefulWidget {
   const OnboardingCompleteScreen({super.key});
 
   @override
-  ConsumerState<OnboardingCompleteScreen> createState() => _OnboardingCompleteScreenState();
+  ConsumerState<OnboardingCompleteScreen> createState() =>
+      _OnboardingCompleteScreenState();
 }
 
-class _OnboardingCompleteScreenState extends ConsumerState<OnboardingCompleteScreen> {
+class _OnboardingCompleteScreenState
+    extends ConsumerState<OnboardingCompleteScreen> {
   bool isLoading = true;
 
   @override

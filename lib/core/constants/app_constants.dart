@@ -4,4 +4,3 @@ class AppConstants {
   static const int maxSelectionsPerStep = 2;
   static const int totalOnboardingSteps = 3;
 }
-

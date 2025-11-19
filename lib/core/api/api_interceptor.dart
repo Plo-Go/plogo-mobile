@@ -1,48 +1,31 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'api_exceptions.dart';
 import '../../features/auth/services/token_storage.dart';
 
-/// API 인터셉터
-/// - 요청/응답 로깅
-/// - 인증 토큰 추가 (선택사항)
-/// - 에러 처리
 class ApiInterceptor extends Interceptor {
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
-    // JWT 토큰을 헤더에 자동 추가
+  void onRequest(
+      RequestOptions options, RequestInterceptorHandler handler) async {
     try {
-      // TokenStorage import 필요
-      // import '../../features/auth/services/token_storage.dart';
       final token = await TokenStorage.getAccessToken();
       if (token != null && token.isNotEmpty) {
         options.headers['Authorization'] = 'Bearer $token';
       }
-    } catch (e) {
-      // 토큰 가져오기 실패 시 무시
-    }
-    // 디버그용 로깅 (프로덕션에서는 제거하거나 로거 사용)
-    if (kDebugMode) {
-      // print('REQUEST[${options.method}] => PATH: ${options.path}');
-    }
+    } catch (_) {}
     super.onRequest(options, handler);
   }
 
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    if (kDebugMode) {
-      // print('RESPONSE[${response.statusCode}] => PATH: ${response.requestOptions.path}');
-    }
     super.onResponse(response, handler);
   }
 
   @override
-  void onError(DioException err, ErrorInterceptorHandler handler) {
-    if (kDebugMode) {
-      // print('ERROR[${err.response?.statusCode}] => PATH: ${err.requestOptions.path}');
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
+      await TokenStorage.clearTokens();
+      // TODO: 로그아웃 후 로그인 화면 이동 처리
     }
-    
-    // DioException을 커스텀 ApiException으로 변환할 수 있습니다
     final error = _handleError(err);
     handler.reject(DioException(
       requestOptions: err.requestOptions,
@@ -69,4 +52,3 @@ class ApiInterceptor extends Interceptor {
     }
   }
 }
-

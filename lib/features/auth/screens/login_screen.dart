@@ -35,7 +35,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       print('사용자 정보: ${user.kakaoAccount?.profile?.nickname}');
 
       // 3. 백엔드에 카카오 액세스 토큰 전송 및 JWT 토큰 받기
-      final loginResponse = await _authService.kakaoMobileLogin(kakaoToken.accessToken);
+      final loginResponse =
+          await _authService.kakaoMobileLogin(kakaoToken.accessToken);
 
       if (loginResponse.isSuccess && loginResponse.data != null) {
         // 4. JWT 토큰 저장
@@ -60,13 +61,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         // 6. 추천 코스 조회 후 온보딩/홈 분기
         try {
           final recommendService = RecommendService();
-          final recommendResponse = await recommendService.getRecommendedCourses();
-          print('[추천코스 API] isSuccess: [32m${recommendResponse.isSuccess}[0m');
+          final recommendResponse =
+              await recommendService.getRecommendedCourses();
+          print(
+              '[추천코스 API] isSuccess: [32m${recommendResponse.isSuccess}[0m');
           print('[추천코스 API] code: ${recommendResponse.code}');
           print('[추천코스 API] message: ${recommendResponse.message}');
-          print('[추천코스 API] data.length: [36m${recommendResponse.data.length}[0m');
+          print(
+              '[추천코스 API] data.length: [36m${recommendResponse.data.length}[0m');
           print('[추천코스 API] data: ${recommendResponse.data}');
-          if (recommendResponse.isSuccess && recommendResponse.data.isNotEmpty) {
+          if (recommendResponse.isSuccess &&
+              recommendResponse.data.isNotEmpty) {
             print('[분기] 홈으로 이동');
             if (mounted) context.go('/home');
           } else {
@@ -114,7 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   children: [
                     Image.asset(
                       'assets/images/plogo.png',
-                      height: 80,
+                      height: 70,
                       fit: BoxFit.contain,
                     ),
                     SizedBox(height: 8),
@@ -141,7 +146,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     elevation: 0,
                     backgroundColor: const Color(0xFFFEE500),
                     foregroundColor: AppColors.black,
-                    disabledBackgroundColor: const Color(0xFFFEE500).withOpacity(0.5),
+                    disabledBackgroundColor:
+                        const Color(0xFFFEE500).withOpacity(0.5),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -152,7 +158,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            valueColor: AlwaysStoppedAnimation<Color>(AppColors.black),
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(AppColors.black),
                           ),
                         )
                       : const Text(

@@ -9,4 +9,3 @@ class AppConfig {
   /// 앱 버전
   static String get appVersion => dotenv.env['APP_VERSION'] ?? '';
 }
-

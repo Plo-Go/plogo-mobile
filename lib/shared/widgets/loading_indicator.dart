@@ -11,11 +11,11 @@ class LineSpinner extends StatefulWidget {
     this.duration = const Duration(milliseconds: 1000),
   });
 
-  final double size;        // 전체 크기
-  final int lineCount;      // 선 개수
-  final double lineLength;  // 선의 세로 길이
-  final double lineWidth;   // 선의 두께
-  final Duration duration;  // 회전 속도
+  final double size; // 전체 크기
+  final int lineCount; // 선 개수
+  final double lineLength; // 선의 세로 길이
+  final double lineWidth; // 선의 두께
+  final Duration duration; // 회전 속도
 
   @override
   State<LineSpinner> createState() => _LineSpinnerState();

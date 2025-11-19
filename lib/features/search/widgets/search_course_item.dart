@@ -77,51 +77,51 @@ class SearchCourseItem extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 24),
         child: Row(
           children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              width: 60,
-              height: 60,
-              color: AppColors.greyLight,
-              child: Image.asset(
-                iconPath,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(8),
+              child: Container(
                 width: 60,
                 height: 60,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => const Icon(
-                  Icons.image,
-                  color: AppColors.grey,
-                  size: 30,
+                color: AppColors.greyLight,
+                child: Image.asset(
+                  iconPath,
+                  width: 60,
+                  height: 60,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Icon(
+                    Icons.image,
+                    color: AppColors.grey,
+                    size: 30,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                RichText(
-                  text: TextSpan(
-                    style: const TextStyle(
-                      fontSize: 16,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  RichText(
+                    text: TextSpan(
+                      style: const TextStyle(
+                        fontSize: 16,
+                      ),
+                      children: _highlightText(query, name),
                     ),
-                    children: _highlightText(query, name),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  address,
-                  style: const TextStyle(
-                    color: AppColors.grey,
-                    fontSize: 13,
+                  const SizedBox(height: 4),
+                  Text(
+                    address,
+                    style: const TextStyle(
+                      color: AppColors.grey,
+                      fontSize: 13,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
+          ],
+        ),
       ),
     );
   }

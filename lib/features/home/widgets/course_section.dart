@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/widgets/course_card.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
+import 'package:go_router/go_router.dart';
 
 class CourseSection extends StatelessWidget {
   final String title;
   final String? subtitle;
-  final List<Map<String, String>> items; // [{name, location, imagePath}]
+  final List<Map<String, Object>> items; // [{courseId, name, location, imagePath}]
 
   const CourseSection({
     super.key,
@@ -26,7 +27,8 @@ class CourseSection extends StatelessWidget {
             children: [
               Text(
                 title,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                style:
+                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               if (subtitle != null) ...[
                 const SizedBox(height: 4),
@@ -60,9 +62,16 @@ class CourseSection extends StatelessWidget {
               itemBuilder: (_, i) {
                 final item = items[i];
                 return CourseCard(
-                  name: item['name'] ?? '이름',
-                  location: item['location'] ?? '위치',
-                  imagePath: item['imagePath'] ?? 'assets/images/sample.png',
+                  name: item['name']?.toString() ?? '이름',
+                  location: item['location']?.toString() ?? '위치',
+                  imagePath: item['imagePath']?.toString() ?? 'assets/images/sample.png',
+                  onTap: () {
+                    final courseId = item['courseId'];
+                    final name = item['name']?.toString() ?? '';
+                    if (courseId != null) {
+                      context.push('/home/detail/$courseId', extra: name);
+                    }
+                  },
                 );
               },
             ),

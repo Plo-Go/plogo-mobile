@@ -9,15 +9,15 @@ import 'shared/theme/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 플러그인 초기화용
-  
+
   // 환경 변수 로드
   await dotenv.load(fileName: '.env');
-  
+
   // 카카오 로그인 SDK 초기화 (네이티브 앱 키)
   KakaoSdk.init(
     nativeAppKey: dotenv.env['KAKAO_NATIVE_APP_KEY'] ?? '',
   );
-  
+
   // 카카오맵 SDK 초기화 (JavaScript 키)
   AuthRepository.initialize(
     appKey: dotenv.env['KAKAO_JS_KEY'] ?? '',

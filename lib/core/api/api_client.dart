@@ -31,4 +31,3 @@ class ApiClient {
 
 /// 전역 API 클라이언트 인스턴스
 final apiClient = ApiClient();
-

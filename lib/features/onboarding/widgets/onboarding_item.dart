@@ -63,4 +63,3 @@ class OnboardingItem extends StatelessWidget {
     );
   }
 }
-

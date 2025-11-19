@@ -21,7 +21,8 @@ class SearchTextField extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 28, color: AppColors.black),
+            icon: const Icon(Icons.arrow_back_ios_new,
+                size: 28, color: AppColors.black),
             onPressed: () => context.pop(),
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -64,7 +65,8 @@ class SearchTextField extends StatelessWidget {
                         controller.clear();
                         onChanged();
                       },
-                      child: const Icon(Icons.close, size: 20, color: AppColors.grey),
+                      child: const Icon(Icons.close,
+                          size: 20, color: AppColors.grey),
                     )
                   else
                     Image.asset(

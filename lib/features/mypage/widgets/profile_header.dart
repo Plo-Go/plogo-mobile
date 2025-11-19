@@ -39,7 +39,8 @@ class ProfileHeader extends StatelessWidget {
                   shape: BoxShape.circle,
                   color: AppColors.greyLight,
                 ),
-                child: const Icon(Icons.person, color: AppColors.grey, size: 32),
+                child:
+                    const Icon(Icons.person, color: AppColors.grey, size: 32),
               ),
               const SizedBox(width: 16),
               // 닉네임/레벨/깃발
@@ -64,12 +65,12 @@ class ProfileHeader extends StatelessWidget {
                             color: AppColors.grey,
                           ),
                         ),
-                         Text(
-                            levelLabel,
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
+                        Text(
+                          levelLabel,
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ],
@@ -80,10 +81,10 @@ class ProfileHeader extends StatelessWidget {
                       children: List.generate(5, (i) {
                         // PNG 캔버스 크기는 같지만 실제 깃발 비주얼이 다름 -> 크기 보정
                         const double filledSize = 24.0; // 채워진 깃발: 여백이 많아서 확대
-                        const double emptySize = 22.0;  // 빈 깃발: 기본 크기
+                        const double emptySize = 22.0; // 빈 깃발: 기본 크기
                         final filled = i < level;
                         final size = filled ? filledSize : emptySize;
-                        
+
                         return Padding(
                           padding: EdgeInsets.only(
                             right: i == 4 ? 0 : 2,
@@ -92,17 +93,23 @@ class ProfileHeader extends StatelessWidget {
                             width: 24, // 최대 크기 기준 셀
                             height: 24,
                             alignment: Alignment.bottomCenter, // 하단 기준 정렬
-                            decoration: filled ? BoxDecoration(
-                              boxShadow: [
-                                BoxShadow(
-                                  color: AppColors.primary.withOpacity(0.16),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                            ) : null,
+                            decoration: filled
+                                ? BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            AppColors.primary.withOpacity(0.16),
+                                        blurRadius: 8,
+                                        offset: const Offset(0, 4),
+                                      ),
+                                    ],
+                                  )
+                                : null,
                             child: Transform.translate(
-                              offset: filled ? const Offset(0, 2) : Offset.zero, // 채워진 깃발만 시각적으로 1px 아래로 이동 (레이아웃 영향 없음)
+                              offset: filled
+                                  ? const Offset(0, 2)
+                                  : Offset
+                                      .zero, // 채워진 깃발만 시각적으로 1px 아래로 이동 (레이아웃 영향 없음)
                               child: Image.asset(
                                 filled
                                     ? 'assets/icons/flag_filled.png'
@@ -110,10 +117,13 @@ class ProfileHeader extends StatelessWidget {
                                 width: size,
                                 height: size,
                                 fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) => Icon(
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(
                                   Icons.flag,
                                   size: size,
-                                  color: filled ? AppColors.primary : AppColors.greyLight,
+                                  color: filled
+                                      ? AppColors.primary
+                                      : AppColors.greyLight,
                                 ),
                               ),
                             ),

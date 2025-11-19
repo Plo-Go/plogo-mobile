@@ -5,16 +5,21 @@ class CourseCard extends StatelessWidget {
   final String name;
   final String location;
   final String imagePath;
+  final VoidCallback? onTap;
 
   const CourseCard({
     super.key,
     required this.name,
     required this.location,
     required this.imagePath,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+  final isNetworkImage =
+    imagePath.startsWith('http://') || imagePath.startsWith('https://');
+  final isEmptyImage = imagePath.isEmpty || imagePath == 'string';
     return Container(
       width: 128,
       height: 128,
@@ -27,18 +32,31 @@ class CourseCard extends StatelessWidget {
         children: [
           // 배경 이미지
           Positioned.fill(
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: AppColors.border,
-                child: const Icon(
-                  Icons.image,
-                  size: 40,
-                  color: AppColors.grey,
-                ),
-              ),
-            ),
+            child: isEmptyImage
+                ? Image.asset(
+                    'assets/images/no_image.png',
+                    fit: BoxFit.cover,
+                  )
+                : isNetworkImage
+                    ? Image.network(
+                        imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          print('[이미지 로딩 에러] URL: $imagePath, error: $error');
+                          return Image.asset(
+                            'assets/images/no_image.png',
+                            fit: BoxFit.cover,
+                          );
+                        },
+                      )
+                    : Image.asset(
+                        imagePath,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Image.asset(
+                          'assets/images/no_image.png',
+                          fit: BoxFit.cover,
+                        ),
+                      ),
           ),
           // 하단 그라데이션 + 텍스트
           Positioned(
@@ -61,15 +79,18 @@ class CourseCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                  InkWell(
+                    onTap: onTap,
+                    child: Text(
+                      name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(

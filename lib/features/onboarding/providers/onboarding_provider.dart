@@ -66,16 +66,16 @@ class OnboardingNotifier extends Notifier<List<List<String>>> {
     }
   }
 
-    Map<String, List<String>> toApiRequestBody() {
-      return {
-        "firstKeyword": state[0],
-        "secondKeyword": state[1],
-        "thirdKeyword": state[2],
-      };
-    }
+  Map<String, List<String>> toApiRequestBody() {
+    return {
+      "firstKeyword": state[0],
+      "secondKeyword": state[1],
+      "thirdKeyword": state[2],
+    };
+  }
 }
 
-final onboardingProvider = NotifierProvider<OnboardingNotifier, List<List<String>>>(
+final onboardingProvider =
+    NotifierProvider<OnboardingNotifier, List<List<String>>>(
   OnboardingNotifier.new,
 );
-
