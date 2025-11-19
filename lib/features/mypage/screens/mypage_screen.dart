@@ -4,12 +4,49 @@ import 'package:plogo/features/mypage/widgets/saved_courses_section.dart';
 import 'package:plogo/features/search/widgets/recent_viewed_courses_section.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:plogo/features/auth/services/token_storage.dart';
+import 'package:plogo/features/auth/services/auth_service.dart';
 import 'package:plogo/features/mypage/services/mypage_service.dart';
 import 'package:plogo/core/api/api_client.dart';
 import 'package:go_router/go_router.dart';
 
-class MyPageScreen extends StatelessWidget {
+
+class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
+
+  @override
+  State<MyPageScreen> createState() => _MyPageScreenState();
+}
+
+class _MyPageScreenState extends State<MyPageScreen> {
+  Map<String, dynamic>? userInfo;
+  bool loading = true;
+  String? error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserInfo();
+  }
+
+  Future<void> _fetchUserInfo() async {
+    setState(() {
+      loading = true;
+      error = null;
+    });
+    try {
+      final response = await AuthService().getUserInfo();
+      print('[유저 정보] ${response.data}');
+      setState(() {
+        userInfo = response.data as Map<String, dynamic>?;
+        loading = false;
+      });
+    } catch (e) {
+      setState(() {
+        error = '유저 정보 불러오기 실패';
+        loading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,11 +75,25 @@ class MyPageScreen extends StatelessWidget {
         children: [
           const SizedBox(height: 48),
           // 상단 프로필 영역
-          const ProfileHeader(
-            nickname: '닉네임',
-            level: 1,
-            levelLabel: '새싹 플로거',
-          ),
+          if (loading)
+            const Center(child: CircularProgressIndicator())
+          else if (error != null)
+            Center(child: Text(error!))
+          else if (userInfo != null)
+            ProfileHeader(
+              nickname: userInfo!['nickname'] ?? '닉네임',
+              level: int.tryParse(userInfo!['level'] ?? '1') ?? 1,
+              levelLabel: userInfo!['level'] ?? '새싹 플로거',
+              profileImg: userInfo!['profileImg'] ?? '',
+              stampCount: userInfo!['stampCount'] ?? 0,
+            )
+          else
+            const ProfileHeader(
+              nickname: '닉네임',
+              level: 1,
+              levelLabel: '새싹 플로거',
+              stampCount: 0,
+            ),
           const SizedBox(height: 36),
           Container(
             width: MediaQuery.of(context).size.width,
