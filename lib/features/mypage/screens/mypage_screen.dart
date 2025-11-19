@@ -202,6 +202,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                       context.go('/splash');
                     },
                   ),
+                  const SizedBox(height: 12),
                 ],
               ),
             ),
