@@ -10,6 +10,7 @@ class MyPageService {
     print('[최근 확인한 코스 API 응답] ${response.data}');
     return List<Map<String, dynamic>>.from(response.data['data'] ?? []);
   }
+
   final Dio _dio;
   MyPageService(this._dio);
 

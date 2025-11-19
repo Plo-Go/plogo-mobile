@@ -116,12 +116,30 @@ class _MyPageScreenState extends State<MyPageScreen> {
           SavedCoursesSection(
             items: savedCourses,
             onSeeAll: _fetchSavedCourses,
+            // 카드 클릭 시 새로고침을 위해 콜백 전달
+            onCardTap: (courseId, name) async {
+              await context.push('/home/detail/$courseId', extra: name);
+              _fetchUserInfo();
+              _fetchSavedCourses();
+              _fetchRecentCourses();
+            },
           ),
           const SizedBox(height: 32),
 
-          // 최근 확인한 코스 섹션 (API 연동)
+          // 최근 확인한 코스 섹션
           RecentViewedCoursesSection(
             items: recentCourses,
+            onRefresh: () async {
+              // 카드 클릭 시 새로고침을 위해 콜백 전달
+              _fetchRecentCourses();
+              _fetchSavedCourses();
+            },
+            onCardTap: (courseId, name) async {
+              await context.push('/home/detail/$courseId', extra: name);
+              _fetchUserInfo();
+              _fetchSavedCourses();
+              _fetchRecentCourses();
+            },
           ),
           const SizedBox(height: 20),
           Container(
@@ -153,7 +171,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
                           TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
                     ),
                     onTap: () {
-                      // TODO: 온보딩 선호도 질문으로 이동
+                      context.go('/onboarding');
                     },
                   ),
                   const SizedBox(height: 6),

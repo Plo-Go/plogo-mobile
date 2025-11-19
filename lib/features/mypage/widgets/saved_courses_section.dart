@@ -6,11 +6,13 @@ import 'package:go_router/go_router.dart';
 class SavedCoursesSection extends StatelessWidget {
   final VoidCallback? onSeeAll;
   final List<Map<String, dynamic>> items; // [{name, area, image, ...}]
+  final Future<void> Function(int courseId, String name)? onCardTap;
 
   const SavedCoursesSection({
     super.key,
     this.onSeeAll,
     this.items = const [],
+    this.onCardTap,
   });
 
   @override
@@ -105,11 +107,11 @@ class SavedCoursesSection extends StatelessWidget {
                       location: item['area'] ?? '위치',
                       imagePath: item['image'] ?? 'assets/images/sample.png',
                       isSave: item['isSave'] == true,
-                      onTap: () {
+                      onTap: () async {
                         final courseId = item['course_id'] ?? item['courseId'];
                         final name = item['name'] ?? '';
-                        if (courseId != null) {
-                          context.push('/home/detail/$courseId', extra: name);
+                        if (courseId != null && onCardTap != null) {
+                          await onCardTap!(courseId, name);
                         }
                       },
                     ),

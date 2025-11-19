@@ -98,12 +98,11 @@ class CourseListView extends StatelessWidget {
                                       width: double.infinity,
                                       fit: BoxFit.cover,
                                     )
-                                  : Container(
+                                  : Image.asset(
+                                      'assets/images/no_image.png',
                                       height: 160,
-                                      color: AppColors.greyLight,
-                                      child: const Center(
-                                          child: Icon(Icons.image,
-                                              color: AppColors.grey, size: 40)),
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
                                     ),
                             ),
                           ],
