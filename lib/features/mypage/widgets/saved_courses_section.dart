@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:plogo/shared/widgets/course_card.dart';
+import 'package:go_router/go_router.dart';
 
 class SavedCoursesSection extends StatelessWidget {
   final VoidCallback? onSeeAll;
@@ -85,18 +86,33 @@ class SavedCoursesSection extends StatelessWidget {
         else
           SizedBox(
             height: 128,
-            child: ListView.separated(
+            child: ListView.builder(
               padding: const EdgeInsets.only(left: 24),
               scrollDirection: Axis.horizontal,
               itemCount: items.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
               itemBuilder: (_, i) {
                 final item = items[i];
-                return CourseCard(
-                  name: item['name'] ?? '이름',
-                  location: item['area'] ?? '위치',
-                  imagePath: item['image'] ?? 'assets/images/sample.png',
-                  isSave: item['isSave'] == true,
+                final isLast = i == items.length - 1;
+                return Row(
+                  children: [
+                    CourseCard(
+                      name: item['name'] ?? '이름',
+                      location: item['area'] ?? '위치',
+                      imagePath: item['image'] ?? 'assets/images/sample.png',
+                      isSave: item['isSave'] == true,
+                      onTap: () {
+                        final courseId = item['course_id'] ?? item['courseId'];
+                        final name = item['name'] ?? '';
+                        if (courseId != null) {
+                          context.push('/home/detail/$courseId', extra: name);
+                        }
+                      },
+                    ),
+                    if (!isLast)
+                      const SizedBox(width: 12)
+                    else
+                      const SizedBox(width: 24),
+                  ],
                 );
               },
             ),
