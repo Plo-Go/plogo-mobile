@@ -17,9 +17,9 @@ class CourseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isNetworkImage =
-        imagePath.startsWith('http://') || imagePath.startsWith('https://');
-    final isEmptyImage = imagePath.isEmpty || imagePath == 'string';
+  final isNetworkImage =
+    imagePath.startsWith('http://') || imagePath.startsWith('https://');
+  final isEmptyImage = imagePath.isEmpty || imagePath == 'string';
     return Container(
       width: 128,
       height: 128,
@@ -33,15 +33,9 @@ class CourseCard extends StatelessWidget {
           // 배경 이미지
           Positioned.fill(
             child: isEmptyImage
-                ? Container(
-                    color: AppColors.border,
-                    child: const Center(
-                      child: Icon(
-                        Icons.image,
-                        size: 40,
-                        color: AppColors.grey,
-                      ),
-                    ),
+                ? Image.asset(
+                    'assets/images/no_image.png',
+                    fit: BoxFit.cover,
                   )
                 : isNetworkImage
                     ? Image.network(
@@ -49,30 +43,18 @@ class CourseCard extends StatelessWidget {
                         fit: BoxFit.cover,
                         errorBuilder: (context, error, stackTrace) {
                           print('[이미지 로딩 에러] URL: $imagePath, error: $error');
-                          return Container(
-                            color: AppColors.border,
-                            child: const Center(
-                              child: Icon(
-                                Icons.image,
-                                size: 40,
-                                color: AppColors.grey,
-                              ),
-                            ),
+                          return Image.asset(
+                            'assets/images/no_image.png',
+                            fit: BoxFit.cover,
                           );
                         },
                       )
                     : Image.asset(
                         imagePath,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => Container(
-                          color: AppColors.border,
-                          child: const Center(
-                            child: Icon(
-                              Icons.image,
-                              size: 40,
-                              color: AppColors.grey,
-                            ),
-                          ),
+                        errorBuilder: (context, error, stackTrace) => Image.asset(
+                          'assets/images/no_image.png',
+                          fit: BoxFit.cover,
                         ),
                       ),
           ),
