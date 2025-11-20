@@ -1,3 +1,4 @@
+import 'package:plogo/features/search/services/search_api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import '../widgets/search_text_field.dart';
@@ -5,7 +6,10 @@ import '../widgets/recent_searches.dart';
 import '../widgets/search_region_item.dart';
 import '../widgets/search_course_item.dart';
 import '../widgets/recent_viewed_courses_section.dart';
+import 'package:plogo/core/api/api_client.dart';
+import 'package:plogo/features/mypage/services/mypage_service.dart';
 import '../widgets/popular_courses_section.dart';
+import 'package:plogo/features/search/services/search_service.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -18,6 +22,11 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
+  Future<List<Map<String, dynamic>>>? _recentCoursesFuture;
+  Future<List<String>>? _recentKeywordsFuture;
+  Future<List<Map<String, dynamic>>>? _regionResultsFuture;
+  Future<List<Map<String, dynamic>>>? _courseResultsFuture;
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +34,8 @@ class _SearchScreenState extends State<SearchScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
+  _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
+  _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
   }
 
   @override
@@ -45,9 +56,8 @@ class _SearchScreenState extends State<SearchScreen> {
             SearchTextField(
               controller: _searchController,
               focusNode: _focusNode,
-              onChanged: () => setState(() {}),
+              onChanged: () => _onSearchChanged(_searchController.text),
             ),
-
             // 검색 결과 영역
             Expanded(
               child: _searchController.text.isEmpty
@@ -60,23 +70,74 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
+  void _onSearchChanged(String value) {
+    final query = value.trim();
+    if (query.isEmpty) {
+      setState(() {
+        _regionResultsFuture = null;
+        _courseResultsFuture = null;
+      });
+      return;
+    }
+    final api = SearchApiService(apiClient.dio);
+    setState(() {
+      _regionResultsFuture = api.getSigunguList().then((regions) =>
+        regions.where((r) => r['sigunguName']?.toString().contains(query) ?? false).toList()
+      );
+      _courseResultsFuture = api.searchCourses(query);
+    });
+  }
+
   Widget _buildRecentSearches() {
-    // TODO: 실제 데이터 연동
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // 최근 검색어
-          RecentSearches(
-            keywords: const ['국립공원', '남양주 공원', '인천', '인천'],
-            onDelete: (keyword) {
-              // TODO: 최근 검색어 삭제 로직
+          FutureBuilder<List<String>>(
+            future: _recentKeywordsFuture,
+            builder: (context, snapshot) {
+              if (_recentKeywordsFuture == null || snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(height: 40, child: Center(child: CircularProgressIndicator()));
+              }
+              if (snapshot.hasError) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text('최근 검색어 불러오기 실패', style: TextStyle(color: Colors.red)),
+                );
+              }
+              final keywords = snapshot.data ?? [];
+              return RecentSearches(
+                keywords: keywords,
+                onDelete: (keyword) {
+                  // TODO: 최근 검색어 삭제 로직
+                },
+              );
             },
           ),
 
           const SizedBox(height: 32),
 
-          const RecentViewedCoursesSection(),
+          // 최근 확인한 코스
+          FutureBuilder<List<Map<String, dynamic>>>(
+            future: _recentCoursesFuture,
+            builder: (context, snapshot) {
+              if (_recentCoursesFuture == null || snapshot.connectionState == ConnectionState.waiting) {
+                return const SizedBox(
+                  height: 128,
+                  child: Center(child: CircularProgressIndicator()),
+                );
+              }
+              if (snapshot.hasError) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text('최근 확인한 코스 불러오기 실패', style: TextStyle(color: Colors.red)),
+                );
+              }
+              final items = snapshot.data ?? [];
+              return RecentViewedCoursesSection(items: items);
+            },
+          ),
 
           const SizedBox(height: 32),
 
@@ -257,68 +318,60 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   Widget _buildSearchResults() {
-    final query = _searchController.text.toLowerCase();
-
-    // 샘플 데이터
-    final regions = [
-      {'name': '문경', 'fullName': '경상북도 문경시'},
-      {'name': '대전', 'fullName': '대전광역시'},
-      {'name': '세종', 'fullName': '세종특별자치시'},
-      {'name': '서울', 'fullName': '서울특별시'},
-    ];
-
-    final courses = [
-      {'name': '문경새재 도립공원', 'address': '경상북도 문경시 문경읍 새재로 932'},
-      {'name': '문경 용추계곡', 'address': '경상북도 문경시 가은읍 완장리'},
-      {'name': '세종호수공원', 'address': '세종특별자치시 연기면'},
-      {'name': '서울숲', 'address': '서울특별시 성동구 뚝섬로'},
-    ];
-
-    // 검색어로 필터링
-    final filteredRegions =
-        regions.where((r) => r['name']!.toLowerCase().contains(query)).toList();
-
-    final filteredCourses = courses
-        .where((c) =>
-            c['name']!.toLowerCase().contains(query) ||
-            c['address']!.toLowerCase().contains(query))
-        .toList();
-
-    // 결과가 없을 때
-    if (filteredRegions.isEmpty && filteredCourses.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(40),
-          child: Text(
-            '검색 결과가 없습니다',
-            style: TextStyle(
-              fontSize: 16,
-              color: AppColors.grey,
-            ),
-          ),
-        ),
-      );
-    }
-
     return ListView(
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.only(top: 0, left: 24, right: 24, bottom: 20),
       children: [
-        // 지역 결과
-        ...filteredRegions.map((region) => SearchRegionItem(
-              query: _searchController.text,
-              name: region['name']!,
-              fullName: region['fullName']!,
-            )),
-
-        if (filteredCourses.isNotEmpty) const SizedBox(height: 20),
-
-        // 코스 결과
-        ...filteredCourses.map((course) => SearchCourseItem(
-              query: _searchController.text,
-              name: course['name']!,
-              address: course['address']!,
-              iconPath: 'assets/images/sample.png',
-            )),
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: _regionResultsFuture,
+          builder: (context, snapshot) {
+            if (_regionResultsFuture == null) return const SizedBox();
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final regions = snapshot.data ?? [];
+            if (regions.isEmpty) return const SizedBox();
+            return Column(
+              children: regions.map((region) => SearchRegionItem(
+                query: _searchController.text,
+                name: region['sigunguName'] ?? '',
+                fullName: region['withArea'] ?? '',
+              )).toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 20),
+        FutureBuilder<List<Map<String, dynamic>>>(
+          future: _courseResultsFuture,
+          builder: (context, snapshot) {
+            if (_courseResultsFuture == null) return const SizedBox();
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            final courses = snapshot.data ?? [];
+            if (courses.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(40),
+                  child: Text(
+                    '검색 결과가 없습니다',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppColors.grey,
+                    ),
+                  ),
+                ),
+              );
+            }
+            return Column(
+              children: courses.map((course) => SearchCourseItem(
+                query: _searchController.text,
+                name: course['name'] ?? '',
+                address: course['area'] ?? '',
+                iconPath: course['image'] ?? 'assets/images/sample.png',
+              )).toList(),
+            );
+          },
+        ),
       ],
     );
   }
