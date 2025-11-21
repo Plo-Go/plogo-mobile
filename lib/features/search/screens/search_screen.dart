@@ -1,4 +1,3 @@
-import 'package:plogo/features/search/services/search_api_service.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
@@ -7,13 +6,14 @@ import '../widgets/recent_searches.dart';
 import '../widgets/search_region_item.dart';
 import '../widgets/search_course_item.dart';
 import '../widgets/recent_viewed_courses_section.dart';
+import '../widgets/popular_courses_section.dart';
 import 'package:plogo/core/api/api_client.dart';
 import 'package:plogo/features/mypage/services/mypage_service.dart';
-import '../widgets/popular_courses_section.dart';
 import 'package:plogo/features/search/services/search_service.dart';
+import 'package:plogo/features/search/services/search_api_service.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  const SearchScreen({Key? key}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -26,66 +26,39 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Future<List<Map<String, dynamic>>>? _recentCoursesFuture;
   Future<List<String>>? _recentKeywordsFuture;
-  // 최근 검색어 삭제 함수
-  Future<void> _deleteKeyword(String keyword) async {
-    final service = SearchService(apiClient.dio);
-    final success = await service.deleteKeyword(keyword);
-    if (success) {
-      setState(() {
-        // 삭제 후 최근 검색어 목록 새로고침
-        _recentKeywordsFuture = service.getRecentKeywords();
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('검색어 삭제에 실패했습니다')),
-      );
-    }
-  }
   Future<List<Map<String, dynamic>>>? _regionResultsFuture;
   Future<List<Map<String, dynamic>>>? _courseResultsFuture;
 
   @override
   void initState() {
     super.initState();
-    // 화면 진입 시 자동으로 키보드 포커스
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
-  _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
-  _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
+    _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
+    _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
   }
 
   @override
   void dispose() {
-  _debounceTimer?.cancel();
+    _debounceTimer?.cancel();
     _searchController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Column(
-          children: [
-            // 상단 검색바
-            SearchTextField(
-              controller: _searchController,
-              focusNode: _focusNode,
-              onChanged: () => _onSearchChanged(_searchController.text),
-            ),
-            // 검색 결과 영역
-            Expanded(
-              child: _searchController.text.isEmpty
-                  ? _buildRecentSearches()
-                  : _buildSearchResults(),
-            ),
-          ],
-        ),
-      ),
-    );
+  Future<void> _deleteKeyword(String keyword) async {
+    final service = SearchService(apiClient.dio);
+    final success = await service.deleteKeyword(keyword);
+    if (success) {
+      setState(() {
+        _recentKeywordsFuture = service.getRecentKeywords();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('검색어 삭제에 실패했습니다')),
+      );
+    }
   }
 
   void _onSearchChanged(String value) {
@@ -96,6 +69,7 @@ class _SearchScreenState extends State<SearchScreen> {
         setState(() {
           _regionResultsFuture = null;
           _courseResultsFuture = null;
+          _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
         });
         return;
       }
@@ -109,12 +83,53 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        print('뒤로가기 호출됨, 검색어: \'${_searchController.text}\'');
+        if (_searchController.text.isNotEmpty) {
+          setState(() {
+            _searchController.clear();
+            _regionResultsFuture = null;
+            _courseResultsFuture = null;
+            _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
+          });
+          Future.delayed(const Duration(milliseconds: 100), () {
+            _focusNode.requestFocus();
+          });
+          return false;
+        }
+        print('pop 허용');
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.white,
+        body: SafeArea(
+          child: Column(
+            children: [
+              SearchTextField(
+                controller: _searchController,
+                focusNode: _focusNode,
+                onChanged: () => _onSearchChanged(_searchController.text),
+              ),
+              Expanded(
+                child: _searchController.text.isEmpty
+                    ? _buildRecentSearches()
+                    : _buildSearchResults(),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildRecentSearches() {
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // 최근 검색어
           FutureBuilder<List<String>>(
             future: _recentKeywordsFuture,
             builder: (context, snapshot) {
@@ -122,8 +137,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 return const SizedBox(height: 40, child: Center(child: CircularProgressIndicator()));
               }
               if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                return const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
                   child: Text('최근 검색어 불러오기 실패', style: TextStyle(color: Colors.red)),
                 );
               }
@@ -134,10 +149,7 @@ class _SearchScreenState extends State<SearchScreen> {
               );
             },
           ),
-
           const SizedBox(height: 32),
-
-          // 최근 확인한 코스
           FutureBuilder<List<Map<String, dynamic>>>(
             future: _recentCoursesFuture,
             builder: (context, snapshot) {
@@ -148,197 +160,26 @@ class _SearchScreenState extends State<SearchScreen> {
                 );
               }
               if (snapshot.hasError) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                return const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
                   child: Text('최근 확인한 코스 불러오기 실패', style: TextStyle(color: Colors.red)),
                 );
               }
-              final items = snapshot.data ?? [];
+              final items = snapshot.data ?? <Map<String, dynamic>>[];
               return RecentViewedCoursesSection(items: items);
             },
           ),
-
           const SizedBox(height: 32),
-
           const PopularCoursesSection(),
-
           const SizedBox(height: 32),
         ],
       ),
     );
-  }
-
-  Widget _buildCourseCard(String name, String location, String imagePath) {
-    return Container(
-      width: 160,
-      height: 160,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: AppColors.greyLight,
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Stack(
-        children: [
-          // 배경 이미지
-          Positioned.fill(
-            child: Image.asset(
-              imagePath,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: AppColors.border,
-                child: const Icon(
-                  Icons.image,
-                  size: 40,
-                  color: AppColors.grey,
-                ),
-              ),
-            ),
-          ),
-          // 하단 그라데이션
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    location,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 12,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // 북마크 아이콘
-          const Positioned(
-            top: 8,
-            right: 8,
-            child: Icon(
-              Icons.bookmark_border,
-              color: Colors.white,
-              size: 24,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPopularCourseItem(int rank, String name, int? rightRank) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        children: [
-          // 왼쪽 랭킹 + 이름
-          Expanded(
-            child: Row(
-              children: [
-                SizedBox(
-                  width: 20,
-                  child: Text(
-                    '$rank',
-                    style: const TextStyle(
-                      color: AppColors.primary,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 15,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          // 오른쪽 랭킹 + 이름 (있는 경우)
-          if (rightRank != null) ...[
-            const SizedBox(width: 24),
-            Expanded(
-              child: Row(
-                children: [
-                  SizedBox(
-                    width: 20,
-                    child: Text(
-                      '$rightRank',
-                      style: const TextStyle(
-                        color: AppColors.primary,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Text(
-                      _getPopularCourseName(rightRank),
-                      style: const TextStyle(
-                        fontSize: 15,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-
-  String _getPopularCourseName(int rank) {
-    const names = {
-      6: '안양천 생태아이가든',
-      7: '한려해상 국립공원',
-      8: '경안천 습지생태공원',
-      9: '목포시 특장자생식물원',
-      10: '낙동강 하구명소',
-    };
-    return names[rank] ?? '';
   }
 
   Widget _buildSearchResults() {
     return ListView(
-      padding: const EdgeInsets.only(top: 0, left: 24, right: 24, bottom: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       children: [
         FutureBuilder<List<Map<String, dynamic>>>(
           future: _regionResultsFuture,
@@ -373,7 +214,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   padding: const EdgeInsets.all(40),
                   child: Text(
                     '검색 결과가 없습니다',
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       color: AppColors.grey,
                     ),

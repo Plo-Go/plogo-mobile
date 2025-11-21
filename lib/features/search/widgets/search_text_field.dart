@@ -17,13 +17,21 @@ class SearchTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(24, 8, 20, 28),
+      padding: const EdgeInsets.fromLTRB(12, 8, 20, 28),
       child: Row(
         children: [
           IconButton(
             icon: const Icon(Icons.arrow_back_ios_new,
                 size: 28, color: AppColors.black),
-            onPressed: () => context.pop(),
+            onPressed: () {
+              if (controller.text.isNotEmpty) {
+                controller.clear();
+                onChanged();
+                focusNode.requestFocus();
+              } else {
+                context.pop();
+              }
+            },
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
           ),
