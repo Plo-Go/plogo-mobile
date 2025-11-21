@@ -171,7 +171,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           const SizedBox(height: 32),
           const PopularCoursesSection(),
-          const SizedBox(height: 32),
+          const SizedBox(height: 20),
         ],
       ),
     );
@@ -179,7 +179,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildSearchResults() {
     return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: const EdgeInsets.only(top: 0, bottom: 12, left: 12, right: 12),
       children: [
         FutureBuilder<List<Map<String, dynamic>>>(
           future: _regionResultsFuture,

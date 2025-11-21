@@ -17,7 +17,7 @@ class SearchTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(12, 8, 20, 28),
+      padding: const EdgeInsets.fromLTRB(12, 8, 20, 18),
       child: Row(
         children: [
           IconButton(
