@@ -30,7 +30,7 @@ class RecentSearches extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 44,
+          height: 36,
           child: ListView.separated(
             padding: const EdgeInsets.only(left: 24, right: 24),
             scrollDirection: Axis.horizontal,

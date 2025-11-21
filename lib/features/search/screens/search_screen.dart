@@ -191,7 +191,13 @@ class _SearchScreenState extends State<SearchScreen> {
             },
           ),
           const SizedBox(height: 32),
-          const PopularCoursesSection(),
+          PopularCoursesSection(
+            onRefreshRecentCourses: () {
+              setState(() {
+                _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
+              });
+            },
+          ),
           const SizedBox(height: 32),
         ],
       ),

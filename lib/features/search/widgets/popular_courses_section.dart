@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
-
-
 import 'package:plogo/features/home/services/hot_course_service.dart';
 import 'package:plogo/features/home/models/course_models.dart';
+import 'package:go_router/go_router.dart';
 
 class PopularCoursesSection extends StatefulWidget {
-  const PopularCoursesSection({super.key});
+  final VoidCallback? onRefreshRecentCourses;
+
+  const PopularCoursesSection({super.key, this.onRefreshRecentCourses});
 
   @override
   State<PopularCoursesSection> createState() => _PopularCoursesSectionState();
@@ -85,29 +86,37 @@ class _PopularCoursesSectionState extends State<PopularCoursesSection> {
   Widget _courseItem(CourseRecommendItem course, int rank) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 32),
-      child: Row(
-        children: [
-          SizedBox(
-            width: 20,
-            child: Text(
-              '$rank',
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+      child: InkWell(
+        onTap: () async {
+          await context.push('/home/detail/${course.courseId}', extra: course.name);
+          if (widget.onRefreshRecentCourses != null) {
+            widget.onRefreshRecentCourses!();
+          }
+        },
+        child: Row(
+          children: [
+            SizedBox(
+              width: 20,
+              child: Text(
+                '$rank',
+                style: const TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              course.name,
-              style: const TextStyle(fontSize: 15),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                course.name,
+                style: const TextStyle(fontSize: 15),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
