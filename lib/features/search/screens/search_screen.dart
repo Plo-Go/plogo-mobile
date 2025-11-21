@@ -146,6 +146,11 @@ class _SearchScreenState extends State<SearchScreen> {
               return RecentSearches(
                 keywords: keywords,
                 onDelete: _deleteKeyword,
+                onTap: (keyword) {
+                  _searchController.text = keyword;
+                  _onSearchChanged(keyword);
+                  _focusNode.unfocus();
+                },
               );
             },
           ),
@@ -171,7 +176,7 @@ class _SearchScreenState extends State<SearchScreen> {
           ),
           const SizedBox(height: 32),
           const PopularCoursesSection(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 32),
         ],
       ),
     );
