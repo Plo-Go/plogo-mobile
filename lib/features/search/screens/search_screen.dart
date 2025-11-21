@@ -11,6 +11,7 @@ import 'package:plogo/core/api/api_client.dart';
 import 'package:plogo/features/mypage/services/mypage_service.dart';
 import 'package:plogo/features/search/services/search_service.dart';
 import 'package:plogo/features/search/services/search_api_service.dart';
+import 'package:go_router/go_router.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -37,6 +38,13 @@ class _SearchScreenState extends State<SearchScreen> {
     });
     _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
     _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // 검색화면이 다시 보일 때마다 최근 코스 Future 갱신
+    _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
   }
 
   @override
@@ -171,7 +179,15 @@ class _SearchScreenState extends State<SearchScreen> {
                 );
               }
               final items = snapshot.data ?? <Map<String, dynamic>>[];
-              return RecentViewedCoursesSection(items: items);
+              return RecentViewedCoursesSection(
+                items: items,
+                onCardTap: (courseId, name) async {
+                  await context.push('/home/detail/$courseId', extra: name);
+                  setState(() {
+                    _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
+                  });
+                },
+              );
             },
           ),
           const SizedBox(height: 32),
