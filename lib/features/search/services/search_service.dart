@@ -15,4 +15,19 @@ class SearchService {
     }
     return [];
   }
+
+  /// 최근 검색어 삭제
+  Future<bool> deleteKeyword(String keyword) async {
+    try {
+  print('[deleteKeyword] PATCH /search/delete/$keyword');
+  final response = await _dio.patch('/search/delete/$keyword');
+      print('[deleteKeyword] response: ${response.data}');
+      if (response.data != null && response.data['isSuccess'] == true) {
+        return true;
+      }
+    } catch (e) {
+      print('검색어 삭제 실패: $e');
+    }
+    return false;
+  }
 }

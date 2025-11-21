@@ -1,4 +1,5 @@
 import 'package:plogo/features/search/services/search_api_service.dart';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import '../widgets/search_text_field.dart';
@@ -19,11 +20,27 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  Timer? _debounceTimer;
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
   Future<List<Map<String, dynamic>>>? _recentCoursesFuture;
   Future<List<String>>? _recentKeywordsFuture;
+  // 최근 검색어 삭제 함수
+  Future<void> _deleteKeyword(String keyword) async {
+    final service = SearchService(apiClient.dio);
+    final success = await service.deleteKeyword(keyword);
+    if (success) {
+      setState(() {
+        // 삭제 후 최근 검색어 목록 새로고침
+        _recentKeywordsFuture = service.getRecentKeywords();
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('검색어 삭제에 실패했습니다')),
+      );
+    }
+  }
   Future<List<Map<String, dynamic>>>? _regionResultsFuture;
   Future<List<Map<String, dynamic>>>? _courseResultsFuture;
 
@@ -40,6 +57,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   void dispose() {
+  _debounceTimer?.cancel();
     _searchController.dispose();
     _focusNode.dispose();
     super.dispose();
@@ -71,20 +89,23 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 
   void _onSearchChanged(String value) {
-    final query = value.trim();
-    if (query.isEmpty) {
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 400), () {
+      final query = value.trim();
+      if (query.isEmpty) {
+        setState(() {
+          _regionResultsFuture = null;
+          _courseResultsFuture = null;
+        });
+        return;
+      }
+      final api = SearchApiService(apiClient.dio);
       setState(() {
-        _regionResultsFuture = null;
-        _courseResultsFuture = null;
+        _regionResultsFuture = api.getSigunguList().then((regions) =>
+          regions.where((r) => r['sigunguName']?.toString().contains(query) ?? false).toList()
+        );
+        _courseResultsFuture = api.searchCourses(query);
       });
-      return;
-    }
-    final api = SearchApiService(apiClient.dio);
-    setState(() {
-      _regionResultsFuture = api.getSigunguList().then((regions) =>
-        regions.where((r) => r['sigunguName']?.toString().contains(query) ?? false).toList()
-      );
-      _courseResultsFuture = api.searchCourses(query);
     });
   }
 
@@ -109,9 +130,7 @@ class _SearchScreenState extends State<SearchScreen> {
               final keywords = snapshot.data ?? [];
               return RecentSearches(
                 keywords: keywords,
-                onDelete: (keyword) {
-                  // TODO: 최근 검색어 삭제 로직
-                },
+                onDelete: _deleteKeyword,
               );
             },
           ),
