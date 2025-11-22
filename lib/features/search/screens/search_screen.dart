@@ -1,17 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import '../widgets/search_text_field.dart';
-import '../widgets/recent_searches.dart';
-import '../widgets/search_region_item.dart';
-import '../widgets/search_course_item.dart';
-import '../widgets/recent_viewed_courses_section.dart';
-import '../widgets/popular_courses_section.dart';
-import 'package:plogo/core/api/api_client.dart';
-import 'package:plogo/features/mypage/services/mypage_service.dart';
+import '../widgets/search_recent_section.dart';
+import '../widgets/search_results_section.dart';
+import 'package:plogo/features/search/providers/search_provider.dart';
 import 'package:plogo/features/search/services/search_service.dart';
-import 'package:plogo/features/search/services/search_api_service.dart';
-import 'package:go_router/go_router.dart';
+import 'package:plogo/core/api/api_client.dart';
+
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -21,30 +18,18 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  late final TextEditingController _searchController;
+  late final FocusNode _focusNode;
   Timer? _debounceTimer;
-  final TextEditingController _searchController = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
-
-  Future<List<Map<String, dynamic>>>? _recentCoursesFuture;
-  Future<List<String>>? _recentKeywordsFuture;
-  Future<List<Map<String, dynamic>>>? _regionResultsFuture;
-  Future<List<Map<String, dynamic>>>? _courseResultsFuture;
 
   @override
   void initState() {
     super.initState();
+    _searchController = TextEditingController();
+    _focusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
     });
-    _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
-    _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    // 검색화면이 다시 보일 때마다 최근 코스 Future 갱신
-    _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
   }
 
   @override
@@ -55,211 +40,73 @@ class _SearchScreenState extends State<SearchScreen> {
     super.dispose();
   }
 
-  Future<void> _deleteKeyword(String keyword) async {
-    final service = SearchService(apiClient.dio);
-    final success = await service.deleteKeyword(keyword);
-    if (success) {
-      setState(() {
-        _recentKeywordsFuture = service.getRecentKeywords();
-      });
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('검색어 삭제에 실패했습니다')),
-      );
-    }
-  }
-
-  void _onSearchChanged(String value) {
+  void _onSearchChanged(WidgetRef ref) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(const Duration(milliseconds: 400), () {
-      final query = value.trim();
-      if (query.isEmpty) {
-        setState(() {
-          _regionResultsFuture = null;
-          _courseResultsFuture = null;
-          _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
-        });
-        return;
+      final keyword = _searchController.text.trim();
+      print('[디바운스 후 검색어] $keyword');
+      ref.read(searchQueryProvider.notifier).state = keyword;
+      if (keyword.isEmpty) {
+        _focusNode.requestFocus();
+      } else {
+        ref.refresh(recentKeywordsProvider); // 검색 시 최근 검색어 강제 갱신
+        ref.refresh(regionResultsProvider(keyword)); // 검색 시 시군구 리스트 강제 갱신
+        ref.refresh(courseResultsProvider(keyword)); // 검색 시 코스 조회 강제 갱신
       }
-      final api = SearchApiService(apiClient.dio);
-      setState(() {
-        _regionResultsFuture = api.getSigunguList().then((regions) =>
-          regions.where((r) => r['sigunguName']?.toString().contains(query) ?? false).toList()
-        );
-        _courseResultsFuture = api.searchCourses(query);
-      });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        print('뒤로가기 호출됨, 검색어: \'${_searchController.text}\'');
-        if (_searchController.text.isNotEmpty) {
-          setState(() {
-            _searchController.clear();
-            _regionResultsFuture = null;
-            _courseResultsFuture = null;
-            _recentKeywordsFuture = SearchService(apiClient.dio).getRecentKeywords();
-          });
-          Future.delayed(const Duration(milliseconds: 100), () {
-            _focusNode.requestFocus();
-          });
-          return false;
-        }
-        print('pop 허용');
-        return true;
-      },
-      child: Scaffold(
-        backgroundColor: AppColors.white,
-        body: SafeArea(
-          child: Column(
-            children: [
-              SearchTextField(
-                controller: _searchController,
-                focusNode: _focusNode,
-                onChanged: () => _onSearchChanged(_searchController.text),
-              ),
-              Expanded(
-                child: _searchController.text.isEmpty
-                    ? _buildRecentSearches()
-                    : _buildSearchResults(),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRecentSearches() {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          FutureBuilder<List<String>>(
-            future: _recentKeywordsFuture,
-            builder: (context, snapshot) {
-              if (_recentKeywordsFuture == null || snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(height: 40, child: Center(child: CircularProgressIndicator()));
-              }
-              if (snapshot.hasError) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Text('최근 검색어 불러오기 실패', style: TextStyle(color: Colors.red)),
-                );
-              }
-              final keywords = snapshot.data ?? [];
-              return RecentSearches(
-                keywords: keywords,
-                onDelete: _deleteKeyword,
-                onTap: (keyword) {
-                  _searchController.text = keyword;
-                  _onSearchChanged(keyword);
-                  _focusNode.unfocus();
-                },
-              );
-            },
-          ),
-          const SizedBox(height: 32),
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: _recentCoursesFuture,
-            builder: (context, snapshot) {
-              if (_recentCoursesFuture == null || snapshot.connectionState == ConnectionState.waiting) {
-                return const SizedBox(
-                  height: 128,
-                  child: Center(child: CircularProgressIndicator()),
-                );
-              }
-              if (snapshot.hasError) {
-                return const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 24),
-                  child: Text('최근 확인한 코스 불러오기 실패', style: TextStyle(color: Colors.red)),
-                );
-              }
-              final items = snapshot.data ?? <Map<String, dynamic>>[];
-              return RecentViewedCoursesSection(
-                items: items,
-                onCardTap: (courseId, name) async {
-                  await context.push('/home/detail/$courseId', extra: name);
-                  setState(() {
-                    _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
-                  });
-                },
-              );
-            },
-          ),
-          const SizedBox(height: 32),
-          PopularCoursesSection(
-            onRefreshRecentCourses: () {
-              setState(() {
-                _recentCoursesFuture = MyPageService(apiClient.dio).getRecentCourses();
+    return Consumer(
+      builder: (context, ref, _) {
+        final query = ref.watch(searchQueryProvider);
+        return WillPopScope(
+          onWillPop: () async {
+            if (_searchController.text.isNotEmpty) {
+              _searchController.clear();
+              ref.read(searchQueryProvider.notifier).state = '';
+              ref.refresh(recentKeywordsProvider);
+              Future.delayed(const Duration(milliseconds: 100), () {
+                _focusNode.requestFocus();
               });
-            },
-          ),
-          const SizedBox(height: 32),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSearchResults() {
-    return ListView(
-      padding: const EdgeInsets.only(top: 0, bottom: 12, left: 12, right: 12),
-      children: [
-        FutureBuilder<List<Map<String, dynamic>>>(
-          future: _regionResultsFuture,
-          builder: (context, snapshot) {
-            if (_regionResultsFuture == null) return const SizedBox();
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return false;
             }
-            final regions = snapshot.data ?? [];
-            if (regions.isEmpty) return const SizedBox();
-            return Column(
-              children: regions.map((region) => SearchRegionItem(
-                query: _searchController.text,
-                name: region['sigunguName'] ?? '',
-                fullName: region['withArea'] ?? '',
-              )).toList(),
-            );
+            return true;
           },
-        ),
-        const SizedBox(height: 20),
-        FutureBuilder<List<Map<String, dynamic>>>(
-          future: _courseResultsFuture,
-          builder: (context, snapshot) {
-            if (_courseResultsFuture == null) return const SizedBox();
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            final courses = snapshot.data ?? [];
-            if (courses.isEmpty) {
-              return Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(40),
-                  child: Text(
-                    '검색 결과가 없습니다',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: AppColors.grey,
-                    ),
+          child: Scaffold(
+            backgroundColor: AppColors.white,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  SearchTextField(
+                    controller: _searchController,
+                    focusNode: _focusNode,
+                    onChanged: () => _onSearchChanged(ref),
                   ),
-                ),
-              );
-            }
-            return Column(
-              children: courses.map((course) => SearchCourseItem(
-                query: _searchController.text,
-                name: course['name'] ?? '',
-                address: course['area'] ?? '',
-                iconPath: course['image'] ?? 'assets/images/sample.png',
-              )).toList(),
-            );
-          },
-        ),
-      ],
+                  Expanded(
+                    child: _searchController.text.isEmpty
+                        ? SearchRecentSection(
+                            key: ValueKey(DateTime.now().millisecondsSinceEpoch),
+                            focusNode: _focusNode,
+                            searchController: _searchController,
+                          )
+                        : Builder(
+                            builder: (context) {
+                              WidgetsBinding.instance.addPostFrameCallback((_) {
+                                final ref = ProviderScope.containerOf(context, listen: false);
+                                ref.refresh(recentKeywordsProvider);
+                              });
+                              return SearchResultsSection(query: _searchController.text);
+                            },
+                          ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }
