@@ -53,6 +53,8 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
                   widget.focusNode!.unfocus();
                   ref.read(searchQueryProvider.notifier).state = keyword;
                   ref.refresh(recentKeywordsProvider); // 클릭 시 최근검색어 즉시 갱신
+                  ref.refresh(regionResultsProvider(keyword)); // 클릭 시 시군구 리스트 강제 갱신
+                  ref.refresh(courseResultsProvider(keyword)); // 클릭 시 코스 조회 강제 갱신
                 }
               },
             ),
