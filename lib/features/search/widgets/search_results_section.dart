@@ -4,6 +4,8 @@ import 'package:plogo/features/search/providers/search_provider.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import '../widgets/search_region_item.dart';
 import '../widgets/search_course_item.dart';
+import 'package:plogo/features/region/screens/sigungu_course_list_screen.dart';
+import 'package:plogo/features/detail/screens/course_detail_screen.dart';
 
 class SearchResultsSection extends ConsumerWidget {
   final String query;
@@ -20,10 +22,22 @@ class SearchResultsSection extends ConsumerWidget {
           data: (regions) => regions.isEmpty
               ? const SizedBox()
               : Column(
-                  children: regions.map((region) => SearchRegionItem(
-                    query: query,
-                    name: region['sigunguName'] ?? '',
-                    fullName: region['withArea'] ?? '',
+                  children: regions.map((region) => GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => SigunguCourseListScreen(
+                            regionName: region['sigunguName'] ?? '',
+                            sigunguId: region['sigunguId'],
+                          ),
+                        ),
+                      );
+                    },
+                    child: SearchRegionItem(
+                      query: query,
+                      name: region['sigunguName'] ?? '',
+                      fullName: region['withArea'] ?? '',
+                    ),
                   )).toList(),
                 ),
           loading: () => const Center(child: CircularProgressIndicator()),
@@ -45,11 +59,25 @@ class SearchResultsSection extends ConsumerWidget {
                   ),
                 )
               : Column(
-                  children: courses.map((course) => SearchCourseItem(
-                    query: query,
-                    name: course['name'] ?? '',
-                    address: course['area'] ?? '',
-                    iconPath: course['image'] ?? 'assets/images/sample.png',
+                  children: courses.map((course) => GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => CourseDetailScreen(
+                            courseId: course['course_id'],
+                            title: course['name'],
+                          ),
+                        ),
+                      );
+                    },
+                    child: SearchCourseItem(
+                      query: query,
+                      name: course['name'] ?? '',
+                      address: course['area'] ?? '',
+          iconPath: (course['image'] != null && course['image'].toString().isNotEmpty)
+            ? course['image']
+            : 'assets/images/no_image.png',
+                    ),
                   )).toList(),
                 ),
           loading: () => const Center(child: CircularProgressIndicator()),

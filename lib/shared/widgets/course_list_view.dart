@@ -7,11 +7,13 @@ class CourseListView extends StatelessWidget {
   final String title;
   final List<CourseRecommendItem> courses;
   final Widget? topWidget;
+  final Function(int courseId, String name)? onCardTap;
   const CourseListView({
     super.key,
     required this.title,
     required this.courses,
     this.topWidget,
+    this.onCardTap,
   });
 
   @override
@@ -39,19 +41,21 @@ class CourseListView extends StatelessWidget {
                     final course = courses[i];
                     return GestureDetector(
                       onTap: () {
-                        // 상세페이지 이동
-                        // 현재 route에 따라 상세페이지 경로 결정
-                        final location =
-                            GoRouterState.of(context).matchedLocation;
-                        String detailRoute;
-                        if (location.startsWith('/log')) {
-                          detailRoute = '/log/detail/${course.courseId}';
-                        } else if (location.startsWith('/mypage')) {
-                          detailRoute = '/mypage/detail/${course.courseId}';
+                        if (onCardTap != null) {
+                          onCardTap!(course.courseId, course.name);
                         } else {
-                          detailRoute = '/home/detail/${course.courseId}';
+                          // 기존 상세페이지 이동 로직
+                          final location = GoRouterState.of(context).matchedLocation;
+                          String detailRoute;
+                          if (location.startsWith('/log')) {
+                            detailRoute = '/log/detail/${course.courseId}';
+                          } else if (location.startsWith('/mypage')) {
+                            detailRoute = '/mypage/detail/${course.courseId}';
+                          } else {
+                            detailRoute = '/home/detail/${course.courseId}';
+                          }
+                          context.push(detailRoute, extra: course.name);
                         }
-                        context.push(detailRoute, extra: course.name);
                       },
                       child: Padding(
                         padding: const EdgeInsets.symmetric(

@@ -83,17 +83,29 @@ class SearchCourseItem extends StatelessWidget {
                 width: 60,
                 height: 60,
                 color: AppColors.greyLight,
-                child: Image.asset(
-                  iconPath,
-                  width: 60,
-                  height: 60,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const Icon(
-                    Icons.image,
-                    color: AppColors.grey,
-                    size: 30,
-                  ),
-                ),
+                child: iconPath.startsWith('http')
+                    ? Image.network(
+                        iconPath,
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.image,
+                          color: AppColors.grey,
+                          size: 30,
+                        ),
+                      )
+                    : Image.asset(
+                        iconPath,
+                        width: 60,
+                        height: 60,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => const Icon(
+                          Icons.image,
+                          color: AppColors.grey,
+                          size: 30,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(width: 12),

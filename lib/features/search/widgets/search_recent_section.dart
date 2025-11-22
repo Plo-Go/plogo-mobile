@@ -20,6 +20,12 @@ class SearchRecentSection extends StatefulWidget {
 
 class _SearchRecentSectionState extends State<SearchRecentSection> {
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final ref = ProviderScope.containerOf(context, listen: false);
+    ref.refresh(recentCoursesProvider);
+  }
+  @override
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
