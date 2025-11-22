@@ -4,11 +4,13 @@ import 'package:plogo/shared/theme/app_colors.dart';
 class RecentSearches extends StatelessWidget {
   final List<String> keywords;
   final Function(String) onDelete;
+  final Function(String)? onTap;
 
   const RecentSearches({
     super.key,
     required this.keywords,
     required this.onDelete,
+    this.onTap,
   });
 
   @override
@@ -28,35 +30,38 @@ class RecentSearches extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         SizedBox(
-          height: 44,
+          height: 36,
           child: ListView.separated(
-            padding: const EdgeInsets.only(left: 24),
+            padding: const EdgeInsets.only(left: 24, right: 24),
             scrollDirection: Axis.horizontal,
             itemCount: keywords.length,
             separatorBuilder: (_, __) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final keyword = keywords[index];
-              return Chip(
-                label: Text(
-                  keyword,
-                  style: const TextStyle(
-                    color: AppColors.black,
-                    fontSize: 14,
+              return GestureDetector(
+                onTap: () => onTap?.call(keyword),
+                child: Chip(
+                  label: Text(
+                    keyword,
+                    style: const TextStyle(
+                      color: AppColors.black,
+                      fontSize: 14,
+                    ),
                   ),
+                  deleteIcon: const Icon(
+                    Icons.close,
+                    size: 16,
+                    color: AppColors.grey,
+                  ),
+                  onDeleted: () => onDelete(keyword),
+                  backgroundColor: AppColors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30),
+                    side: const BorderSide(color: AppColors.greyLight),
+                  ),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
                 ),
-                deleteIcon: const Icon(
-                  Icons.close,
-                  size: 16,
-                  color: AppColors.grey,
-                ),
-                onDeleted: () => onDelete(keyword),
-                backgroundColor: AppColors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                  side: const BorderSide(color: AppColors.greyLight),
-                ),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
               );
             },
           ),
