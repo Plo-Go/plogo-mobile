@@ -74,7 +74,9 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                padding: EdgeInsets.fromLTRB(
+                  20, 24, 20, 20 + MediaQuery.of(context).viewInsets.bottom
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -104,7 +106,7 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
                     TextField(
                       controller: _recordController,
                       decoration: const InputDecoration(
-                        hintText: '기록을 입력하세요',
+                        hintText: '나만의 기록을 남겨 보세요.',
                         hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
                         filled: true,
                         fillColor: AppColors.greyLight,
