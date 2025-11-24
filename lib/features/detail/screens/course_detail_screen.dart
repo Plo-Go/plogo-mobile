@@ -382,22 +382,30 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                             onPressed: isComplete
                                 ? null
                                 : () async {
-                                    final response = await CourseDetailService().completeCourse(widget.courseId);
-                                    if (response != null && response['isSuccess'] == true) {
+                                    final response = await CourseDetailService()
+                                        .completeCourse(widget.courseId);
+                                    if (response != null &&
+                                        response['isSuccess'] == true) {
                                       setState(() {
                                         isComplete = true;
                                       });
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
                                         SnackBar(content: Text('완주가 완료되었습니다!')),
                                       );
                                     } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text('완주 처리에 실패했습니다. 다시 시도해주세요.')),
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                '완주 처리에 실패했습니다. 다시 시도해주세요.')),
                                       );
                                     }
                                   },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: isComplete ? AppColors.greyDisabled : AppColors.primary,
+                              backgroundColor: isComplete
+                                  ? AppColors.greyDisabled
+                                  : AppColors.primary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12)),
                               padding: EdgeInsets.symmetric(vertical: 14),

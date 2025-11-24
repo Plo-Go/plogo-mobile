@@ -42,9 +42,9 @@ class _LogScreenState extends State<LogScreen> {
   @override
   void initState() {
     super.initState();
-  dotenv.load();
-  _loadMarkerImage();
-  _fetchCompletedCourses();
+    dotenv.load();
+    _loadMarkerImage();
+    _fetchCompletedCourses();
   }
 
   // 주소 파싱
@@ -58,7 +58,8 @@ class _LogScreenState extends State<LogScreen> {
     if (latLng != null) return latLng;
 
     // 3. 주소에서 시/도만 추출해서 시도
-    final regExp = RegExp(r'([가-힣]+도|서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시)');
+    final regExp =
+        RegExp(r'([가-힣]+도|서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시)');
     final match = regExp.firstMatch(address);
     if (match != null) {
       final region = match.group(0);
@@ -75,24 +76,29 @@ class _LogScreenState extends State<LogScreen> {
     final list = await LogService().getCompletedCourses();
     print('[완주 코스 리스트]');
     for (var course in list) {
-      print('logId: \u001b[32m${course.logId}\u001b[0m, address: ${course.address}, name: ${course.name}');
+      print(
+          'logId: \u001b[32m${course.logId}\u001b[0m, address: ${course.address}, name: ${course.name}');
     }
     // 각 코스 address를 좌표로 변환 (파싱 강화)
     for (var course in list) {
       LatLng? latLng = await _tryParseAddress(course.address, course.name);
       if (latLng != null) {
         courseLatLngMap[course.logId] = latLng;
-        print('[지오코딩] logId: ${course.logId}, lat: ${latLng.latitude}, lng: ${latLng.longitude}');
+        print(
+            '[지오코딩] logId: ${course.logId}, lat: ${latLng.latitude}, lng: ${latLng.longitude}');
       } else {
-        print('[지오코딩 실패] logId: ${course.logId}, address: ${course.address}, name: ${course.name}');
+        print(
+            '[지오코딩 실패] logId: ${course.logId}, address: ${course.address}, name: ${course.name}');
         // 위치 미상 마커 등으로 처리 가능 (지도에 표시 X 또는 특수 마커)
       }
     }
     // 모든 마커 좌표가 세팅된 후, 중심 좌표 계산
     if (courseLatLngMap.isNotEmpty) {
       final latLngs = courseLatLngMap.values.toList();
-      final avgLat = latLngs.map((e) => e.latitude).reduce((a, b) => a + b) / latLngs.length;
-      final avgLng = latLngs.map((e) => e.longitude).reduce((a, b) => a + b) / latLngs.length;
+      final avgLat = latLngs.map((e) => e.latitude).reduce((a, b) => a + b) /
+          latLngs.length;
+      final avgLng = latLngs.map((e) => e.longitude).reduce((a, b) => a + b) /
+          latLngs.length;
       setState(() {
         _centerPosition = LatLng(avgLat, avgLng);
       });
@@ -106,7 +112,8 @@ class _LogScreenState extends State<LogScreen> {
     final markers = <Marker>[];
     for (var course in completedCourses) {
       final latLng = courseLatLngMap[course.logId] ?? _centerPosition;
-      debugPrint('[마커 생성] logId: ${course.logId}, name: ${course.name}, address: ${course.address}, lat: ${latLng.latitude}, lng: ${latLng.longitude}');
+      debugPrint(
+          '[마커 생성] logId: ${course.logId}, name: ${course.name}, address: ${course.address}, lat: ${latLng.latitude}, lng: ${latLng.longitude}');
       markers.add(Marker(
         markerId: 'completed_${course.logId}',
         latLng: latLng,
@@ -178,14 +185,16 @@ class _LogScreenState extends State<LogScreen> {
                 // 마커 클릭 시, 코스 정보로 모달창 표시
                 final course = completedCourses.firstWhere(
                   (c) => 'completed_${c.logId}' == markerId,
-                  orElse: () => CompletedCourse.empty(), // CompletedCourse에 empty 생성자 필요
+                  orElse: () =>
+                      CompletedCourse.empty(), // CompletedCourse에 empty 생성자 필요
                 );
                 if (course == null || course.logId == -1) return;
                 showModalBottomSheet(
                   context: Navigator.of(context, rootNavigator: true).context,
                   isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16)),
                   ),
                   builder: (context) => CourseRecordModal(course: course),
                 );
@@ -201,6 +210,5 @@ class _LogScreenState extends State<LogScreen> {
       });
       return _buildFallbackMap();
     }
-    
   }
 }

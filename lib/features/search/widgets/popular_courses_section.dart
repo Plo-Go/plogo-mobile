@@ -33,7 +33,8 @@ class _PopularCoursesSectionState extends State<PopularCoursesSection> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return const Text('인기 코스 불러오기 실패', style: TextStyle(color: Colors.red));
+            return const Text('인기 코스 불러오기 실패',
+                style: TextStyle(color: Colors.red));
           }
           final courses = snapshot.data?.data ?? [];
           if (courses.isEmpty) {
@@ -88,7 +89,8 @@ class _PopularCoursesSectionState extends State<PopularCoursesSection> {
       padding: const EdgeInsets.only(bottom: 32),
       child: InkWell(
         onTap: () async {
-          await context.push('/home/detail/${course.courseId}', extra: course.name);
+          await context.push('/home/detail/${course.courseId}',
+              extra: course.name);
           if (widget.onRefreshRecentCourses != null) {
             widget.onRefreshRecentCourses!();
           }

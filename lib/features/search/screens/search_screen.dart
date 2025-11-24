@@ -9,7 +9,6 @@ import 'package:plogo/features/search/providers/search_provider.dart';
 import 'package:plogo/features/search/services/search_service.dart';
 import 'package:plogo/core/api/api_client.dart';
 
-
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
 
@@ -87,17 +86,20 @@ class _SearchScreenState extends State<SearchScreen> {
                   Expanded(
                     child: _searchController.text.isEmpty
                         ? SearchRecentSection(
-                            key: ValueKey(DateTime.now().millisecondsSinceEpoch),
+                            key:
+                                ValueKey(DateTime.now().millisecondsSinceEpoch),
                             focusNode: _focusNode,
                             searchController: _searchController,
                           )
                         : Builder(
                             builder: (context) {
                               WidgetsBinding.instance.addPostFrameCallback((_) {
-                                final ref = ProviderScope.containerOf(context, listen: false);
+                                final ref = ProviderScope.containerOf(context,
+                                    listen: false);
                                 ref.refresh(recentKeywordsProvider);
                               });
-                              return SearchResultsSection(query: _searchController.text);
+                              return SearchResultsSection(
+                                  query: _searchController.text);
                             },
                           ),
                   ),

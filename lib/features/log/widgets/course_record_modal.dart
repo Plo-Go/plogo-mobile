@@ -26,7 +26,9 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
   }
 
   Future<void> _fetchLogDetail() async {
-    setState(() { _isLoading = true; });
+    setState(() {
+      _isLoading = true;
+    });
     try {
       final logId = widget.course.logId;
       final response = await LogService().getLogDetail(logId);
@@ -36,7 +38,9 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
         _existingPhotoUrls = List<String>.from(data['photos'] ?? []);
       }
     } catch (e) {}
-    setState(() { _isLoading = false; });
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> _updateLog() async {
@@ -61,7 +65,6 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
       decoration: const BoxDecoration(
         color: AppColors.white,
@@ -75,8 +78,7 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
           : SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.fromLTRB(
-                  20, 24, 20, 20 + MediaQuery.of(context).viewInsets.bottom
-                ),
+                    20, 24, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -107,14 +109,16 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
                       controller: _recordController,
                       decoration: const InputDecoration(
                         hintText: '나만의 기록을 남겨 보세요.',
-                        hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
+                        hintStyle:
+                            TextStyle(color: AppColors.grey, fontSize: 14),
                         filled: true,
                         fillColor: AppColors.greyLight,
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.all(Radius.circular(12)),
                           borderSide: BorderSide.none,
                         ),
-                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                        contentPadding:
+                            EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
                       maxLines: 3,
                     ),
@@ -156,8 +160,10 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
                           );
                         }
                         // 새로 추가한 사진 표시
-                        else if (index - _existingPhotoUrls.length < _images.length) {
-                          final img = _images[index - _existingPhotoUrls.length];
+                        else if (index - _existingPhotoUrls.length <
+                            _images.length) {
+                          final img =
+                              _images[index - _existingPhotoUrls.length];
                           return Stack(
                             children: [
                               ClipRRect(
@@ -175,7 +181,8 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
                                 child: GestureDetector(
                                   onTap: () {
                                     setState(() {
-                                      _images.removeAt(index - _existingPhotoUrls.length);
+                                      _images.removeAt(
+                                          index - _existingPhotoUrls.length);
                                     });
                                   },
                                   child: Image.asset(
@@ -189,7 +196,10 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
                           );
                         }
                         // 추가 버튼
-                        else if (_existingPhotoUrls.length + _images.length < 3 && index == _existingPhotoUrls.length + _images.length) {
+                        else if (_existingPhotoUrls.length + _images.length <
+                                3 &&
+                            index ==
+                                _existingPhotoUrls.length + _images.length) {
                           return GestureDetector(
                             onTap: _pickImages,
                             child: Container(
@@ -197,7 +207,8 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
                               height: 104,
                               decoration: BoxDecoration(
                                 color: AppColors.white,
-                                border: Border.all(color: AppColors.grey, width: 0.5),
+                                border: Border.all(
+                                    color: AppColors.grey, width: 0.5),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Center(
@@ -234,7 +245,9 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
                           elevation: 0,
                         ),
                         onPressed: _updateLog,
-                        child: const Text('완료', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        child: const Text('완료',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
                       ),
                     ),
                     const SizedBox(height: 8),

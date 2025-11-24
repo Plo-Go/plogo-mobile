@@ -3,7 +3,8 @@ import '../../../core/api/api_client.dart';
 
 class CompletedCourse {
   // 빈 객체 반환용 생성자
-  factory CompletedCourse.empty() => CompletedCourse(logId: -1, address: '', name: '');
+  factory CompletedCourse.empty() =>
+      CompletedCourse(logId: -1, address: '', name: '');
   final int logId;
   final String address;
   final String name;
@@ -62,7 +63,8 @@ class LogService {
     List<dynamic> newImages, // XFile or File
   ) async {
     try {
-      print('[LogService] updateLog 요청: logId=$logId, logContent=$logContent, existingUrls=$existingUrls, newImages=${newImages.length}');
+      print(
+          '[LogService] updateLog 요청: logId=$logId, logContent=$logContent, existingUrls=$existingUrls, newImages=${newImages.length}');
       final formData = FormData();
       formData.fields
         ..add(MapEntry('logContent', logContent))
@@ -71,7 +73,8 @@ class LogService {
         formData.files.add(
           MapEntry(
             'newImages',
-            await MultipartFile.fromFile(img.path, filename: img.path.split('/').last),
+            await MultipartFile.fromFile(img.path,
+                filename: img.path.split('/').last),
           ),
         );
       }

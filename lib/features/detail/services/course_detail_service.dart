@@ -51,15 +51,15 @@ class CourseDetailService {
       return null;
     }
   }
-  
-    Future<Map<String, dynamic>?> completeCourse(int courseId) async {
-      try {
-        final response = await _dio.post('/course/complete/$courseId');
-        print('[CourseComplete] 응답: ${response.data}');
-        return response.data;
-      } catch (e) {
-        print('[CourseComplete] 에러: $e');
-        return null;
-      }
+
+  Future<Map<String, dynamic>?> completeCourse(int courseId) async {
+    try {
+      final response = await _dio.post('/course/complete/$courseId');
+      print('[CourseComplete] 응답: ${response.data}');
+      return response.data;
+    } catch (e) {
+      print('[CourseComplete] 에러: $e');
+      return null;
     }
+  }
 }
