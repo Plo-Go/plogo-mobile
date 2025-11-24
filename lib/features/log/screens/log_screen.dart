@@ -4,6 +4,7 @@ import 'package:plogo/shared/widgets/top_bar.dart';
 import 'package:plogo/features/log/services/log_service.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:plogo/features/log/services/geocoding_service.dart';
+import 'package:plogo/features/log/widgets/course_record_modal.dart';
 
 class LogScreen extends StatefulWidget {
   const LogScreen({super.key});
@@ -13,6 +14,20 @@ class LogScreen extends StatefulWidget {
 }
 
 class _LogScreenState extends State<LogScreen> {
+  /// 지도 로딩 실패 시 대체 UI
+  Widget _buildFallbackMap() {
+    return Container(
+      color: const Color(0xFFF5F5F5),
+      child: const Center(
+        child: Text(
+          '카카오 맵 로딩 실패',
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
   final GeocodingService _geocodingService = GeocodingService();
   Map<int, LatLng> courseLatLngMap = {};
   KakaoMapController? mapController;
@@ -32,7 +47,7 @@ class _LogScreenState extends State<LogScreen> {
   _fetchCompletedCourses();
   }
 
-  // 주소 파싱 강화: 전체 주소, 코스명, 시/도 중심까지 시도
+  // 주소 파싱
   Future<LatLng?> _tryParseAddress(String address, String name) async {
     // 1. 전체 주소로 시도
     LatLng? latLng = await _geocodingService.getLatLngFromAddress(address);
@@ -52,7 +67,7 @@ class _LogScreenState extends State<LogScreen> {
         if (latLng != null) return latLng;
       }
     }
-    // 4. 그래도 안 되면 null 반환 (제주도 중심 좌표 사용 X)
+    // 4. 최종 안될경우 null 반환
     return null;
   }
 
@@ -88,19 +103,16 @@ class _LogScreenState extends State<LogScreen> {
   }
 
   List<Marker> get _markers {
-    // 기존 완주 코스 마커들
     final markers = <Marker>[];
     for (var course in completedCourses) {
       final latLng = courseLatLngMap[course.logId] ?? _centerPosition;
-      // 마커 생성 위치, 주소, 코스명 로그 출력
       debugPrint('[마커 생성] logId: ${course.logId}, name: ${course.name}, address: ${course.address}, lat: ${latLng.latitude}, lng: ${latLng.longitude}');
       markers.add(Marker(
         markerId: 'completed_${course.logId}',
         latLng: latLng,
-        infoWindowContent: course.name,
         markerImageSrc: _markerImageDataUri ?? '',
-        width: 28,
-        height: 28,
+        width: 36,
+        height: 36,
       ));
     }
     return markers;
@@ -163,19 +175,19 @@ class _LogScreenState extends State<LogScreen> {
               center: _centerPosition,
               markers: _markers,
               onMarkerTap: (String markerId, LatLng latLng, int index) {
+                // 마커 클릭 시, 코스 정보로 모달창 표시
+                final course = completedCourses.firstWhere(
+                  (c) => 'completed_${c.logId}' == markerId,
+                  orElse: () => CompletedCourse.empty(), // CompletedCourse에 empty 생성자 필요
+                );
+                if (course == null || course.logId == -1) return;
                 showModalBottomSheet(
                   context: context,
-                  builder: (context) => SizedBox(
-                    height: 200,
-                    child: Center(
-                      child: Text(
-                        '마커 $markerId 클릭됨\n'
-                        '(${latLng.latitude}, ${latLng.longitude})',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                    ),
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                   ),
+                  builder: (context) => CourseRecordModal(course: course),
                 );
               },
             ),
@@ -189,19 +201,6 @@ class _LogScreenState extends State<LogScreen> {
       });
       return _buildFallbackMap();
     }
-  }
-
-  /// 지도 로딩 실패 시 대체 UI
-  Widget _buildFallbackMap() {
-    return Container(
-      color: const Color(0xFFF5F5F5),
-      child: const Center(
-        child: Text(
-          '카카오 맵 로딩 실패',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
+    
   }
 }

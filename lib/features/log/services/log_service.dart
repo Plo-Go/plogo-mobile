@@ -2,6 +2,8 @@ import 'package:dio/dio.dart';
 import '../../../core/api/api_client.dart';
 
 class CompletedCourse {
+  // 빈 객체 반환용 생성자
+  factory CompletedCourse.empty() => CompletedCourse(logId: -1, address: '', name: '');
   final int logId;
   final String address;
   final String name;
