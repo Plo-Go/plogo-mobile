@@ -51,7 +51,7 @@ class _SplashScreenState extends State<SplashScreen> {
               right: 0,
               bottom: 48,
               child: Text(
-                'Plogo',
+                'PloGo',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 20,

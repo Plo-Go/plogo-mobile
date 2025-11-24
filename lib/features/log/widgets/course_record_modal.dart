@@ -16,6 +16,37 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
   final TextEditingController _recordController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   List<XFile> _images = [];
+  List<String> _existingPhotoUrls = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchLogDetail();
+  }
+
+  Future<void> _fetchLogDetail() async {
+    setState(() { _isLoading = true; });
+    try {
+      final logId = widget.course.logId;
+      final response = await LogService().getLogDetail(logId);
+      if (response != null && response['isSuccess'] == true) {
+        final data = response['data'];
+        _recordController.text = data['logContent'] ?? '';
+        _existingPhotoUrls = List<String>.from(data['photos'] ?? []);
+      }
+    } catch (e) {}
+    setState(() { _isLoading = false; });
+  }
+
+  Future<void> _updateLog() async {
+    final logId = widget.course.logId;
+    final logContent = _recordController.text;
+    final existingUrls = _existingPhotoUrls;
+    final newImages = _images;
+    await LogService().updateLog(logId, logContent, existingUrls, newImages);
+    Navigator.of(context).pop();
+  }
 
   Future<void> _pickImages() async {
     if (_images.length >= 3) return;
@@ -39,141 +70,176 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
           topRight: Radius.circular(20),
         ),
       ),
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.course.name,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.of(context).pop(),
-                    child: Image.asset(
-                      'assets/icons/modal_close.png',
-                      width: 16,
-                      height: 16,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _recordController,
-                decoration: const InputDecoration(
-                  hintText: '나만의 기록을 남겨보세요.',
-                  hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
-                  filled: true,
-                  fillColor: AppColors.greyLight,
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(8)),
-                    borderSide: BorderSide.none,
-                  ),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                ),
-                maxLines: 2,
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: List.generate(3, (index) {
-                  if (index < _images.length) {
-                    final img = _images[index];
-                    return Stack(
+      child: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.file(
-                            File(img.path),
-                            width: 104,
-                            height: 104,
-                            fit: BoxFit.cover,
+                        Expanded(
+                          child: Text(
+                            widget.course.name,
+                            style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        Positioned(
-                          top: 6,
-                          right: 6,
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                _images.removeAt(index);
-                              });
-                            },
-                            child: Image.asset(
-                              'assets/icons/image_delete.png',
-                              width: 12,
-                              height: 12,
-                            ),
+                        GestureDetector(
+                          onTap: () => Navigator.of(context).pop(),
+                          child: Image.asset(
+                            'assets/icons/modal_close.png',
+                            width: 24,
+                            height: 24,
                           ),
                         ),
                       ],
-                    );
-                  } else if (_images.length < 3 && index == _images.length) {
-                    return GestureDetector(
-                      onTap: _pickImages,
-                      child: Container(
-                        width: 104,
-                        height: 104,
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          border: Border.all(color: AppColors.grey, width: 0.5),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Center(
-                          child: Image.asset(
-                            'assets/icons/add.png',
-                            width: 32,
-                            height: 32,
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else {
-                    return Container(
-                      width: 104,
-                      height: 104,
-                      color: Colors.transparent,
-                    );
-                  }
-                }),
-              ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: TextButton(
-                  style: TextButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
                     ),
-                    elevation: 0,
-                  ),
-                  onPressed: () {
-                    // 기록 저장 기능: _recordController.text, _images 활용
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('완료', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 16),
+                    TextField(
+                      controller: _recordController,
+                      decoration: const InputDecoration(
+                        hintText: '기록을 입력하세요',
+                        hintStyle: TextStyle(color: AppColors.grey, fontSize: 14),
+                        filled: true,
+                        fillColor: AppColors.greyLight,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(12)),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                      maxLines: 3,
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: List.generate(3, (index) {
+                        // 기존 사진 먼저 표시
+                        if (index < _existingPhotoUrls.length) {
+                          final url = _existingPhotoUrls[index];
+                          return Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  url,
+                                  width: 104,
+                                  height: 104,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                top: 6,
+                                right: 6,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _existingPhotoUrls.removeAt(index);
+                                    });
+                                  },
+                                  child: Image.asset(
+                                    'assets/icons/image_delete.png',
+                                    width: 12,
+                                    height: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                        // 새로 추가한 사진 표시
+                        else if (index - _existingPhotoUrls.length < _images.length) {
+                          final img = _images[index - _existingPhotoUrls.length];
+                          return Stack(
+                            children: [
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  File(img.path),
+                                  width: 104,
+                                  height: 104,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              Positioned(
+                                top: 6,
+                                right: 6,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    setState(() {
+                                      _images.removeAt(index - _existingPhotoUrls.length);
+                                    });
+                                  },
+                                  child: Image.asset(
+                                    'assets/icons/image_delete.png',
+                                    width: 12,
+                                    height: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        }
+                        // 추가 버튼
+                        else if (_existingPhotoUrls.length + _images.length < 3 && index == _existingPhotoUrls.length + _images.length) {
+                          return GestureDetector(
+                            onTap: _pickImages,
+                            child: Container(
+                              width: 104,
+                              height: 104,
+                              decoration: BoxDecoration(
+                                color: AppColors.white,
+                                border: Border.all(color: AppColors.grey, width: 0.5),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Center(
+                                child: Image.asset(
+                                  'assets/icons/add.png',
+                                  width: 32,
+                                  height: 32,
+                                  fit: BoxFit.contain,
+                                ),
+                              ),
+                            ),
+                          );
+                        } else {
+                          return Container(
+                            width: 104,
+                            height: 104,
+                            color: Colors.transparent,
+                          );
+                        }
+                      }),
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 48,
+                      child: TextButton(
+                        style: TextButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
+                        ),
+                        onPressed: _updateLog,
+                        child: const Text('완료', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
