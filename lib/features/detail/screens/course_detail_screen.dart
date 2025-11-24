@@ -78,6 +78,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
   }
 
   bool isSave = false;
+  bool isComplete = false;
   CourseDetail? detail;
   bool loading = true;
   String? error;
@@ -100,6 +101,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
       setState(() {
         detail = response.data;
         isSave = response.data.isSave ?? false;
+        isComplete = response.data.isComplete ?? false;
         loading = false;
       });
     } catch (e) {
@@ -377,18 +379,51 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                               horizontal: 24, vertical: 16),
                           color: AppColors.white,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: isComplete
+                                ? null
+                                : () async {
+                                    final response = await CourseDetailService().completeCourse(widget.courseId);
+                                    if (response != null && response['isSuccess'] == true) {
+                                      setState(() {
+                                        isComplete = true;
+                                      });
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('완주가 완료되었습니다!')),
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('완주 처리에 실패했습니다. 다시 시도해주세요.')),
+                                      );
+                                    }
+                                  },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
+                              backgroundColor: isComplete ? AppColors.greyDisabled : AppColors.primary,
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12)),
                               padding: EdgeInsets.symmetric(vertical: 14),
                             ),
-                            child: Text('완주하기',
-                                style: TextStyle(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if (isComplete)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8),
+                                    child: Image.asset(
+                                      'assets/icons/flag_completed.png',
+                                      width: 22,
+                                      height: 22,
+                                    ),
+                                  ),
+                                Text(
+                                  isComplete ? '완주완료' : '완주하기',
+                                  style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.white)),
+                                    color: AppColors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ],
