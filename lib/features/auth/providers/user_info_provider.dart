@@ -27,3 +27,6 @@ class UserInfo {
 }
 
 final userInfoProvider = StateProvider<UserInfo?>((ref) => null);
+
+/// 인증 상태 Provider (로그인 여부)
+final isLoggedInProvider = StateProvider<bool>((ref) => false);

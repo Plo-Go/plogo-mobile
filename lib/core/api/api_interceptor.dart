@@ -1,6 +1,9 @@
 import 'package:dio/dio.dart';
 import 'api_exceptions.dart';
 import '../../features/auth/services/token_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/auth/providers/user_info_provider.dart';
 
 class ApiInterceptor extends Interceptor {
   @override
@@ -24,7 +27,9 @@ class ApiInterceptor extends Interceptor {
   void onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
       await TokenStorage.clearTokens();
-      // TODO: 로그아웃 후 로그인 화면 이동 처리
+      // 인증 상태 Provider를 false로 변경 (자동 로그아웃)
+      final container = ProviderContainer();
+      container.read(isLoggedInProvider.notifier).state = false;
     }
     final error = _handleError(err);
     handler.reject(DioException(
