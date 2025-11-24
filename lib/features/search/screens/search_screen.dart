@@ -1,4 +1,3 @@
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +13,8 @@ import 'package:plogo/core/api/api_client.dart';
 final isSearchConfirmedProvider = StateProvider<bool>((ref) => false);
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  final String? initialKeyword;
+  const SearchScreen({Key? key, this.initialKeyword}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -22,14 +22,15 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   int _recentSectionKey = DateTime.now().millisecondsSinceEpoch;
-  late final TextEditingController _searchController;
-  late final FocusNode _focusNode;
+  late TextEditingController _searchController;
+  late FocusNode _focusNode;
   Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    _searchController = TextEditingController();
+    _searchController =
+        TextEditingController(text: widget.initialKeyword ?? '');
     _focusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
@@ -63,8 +64,8 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
-  final query = ref.watch(searchQueryProvider);
-  final isSearchConfirmed = ref.watch(isSearchConfirmedProvider);
+        final query = ref.watch(searchQueryProvider);
+        final isSearchConfirmed = ref.watch(isSearchConfirmedProvider);
         return WillPopScope(
           onWillPop: () async {
             if (_searchController.text.isNotEmpty) {
@@ -88,7 +89,8 @@ class _SearchScreenState extends State<SearchScreen> {
                     focusNode: _focusNode,
                     onChanged: () {
                       _onSearchChanged(ref);
-                      ref.read(isSearchConfirmedProvider.notifier).state = false;
+                      ref.read(isSearchConfirmedProvider.notifier).state =
+                          false;
                     },
                     onSubmitted: (value) {
                       final keyword = value.trim();
@@ -112,36 +114,44 @@ class _SearchScreenState extends State<SearchScreen> {
                                     listen: false);
                                 ref.refresh(recentKeywordsProvider);
                               });
-                if (isSearchConfirmed) {
-                  // 검색 확정 시, 검색 결과 화면으로 이동
-                  WidgetsBinding.instance.addPostFrameCallback((_) async {
-                    await Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => SearchCourseListScreen(
-                          keyword: _searchController.text,
-                        ),
-                      ),
-                    );
-                    if (mounted) {
-                      setState(() {});
-                    }
-                    // 검색 결과 화면에서 돌아오면 최근 검색어 강제 최신화 (캐시 무시)
-                    ref.invalidate(recentKeywordsProvider);
-                    // 검색 확정 상태 초기화 (중복 네비 방지)
-                    ref.read(isSearchConfirmedProvider.notifier).state = false;
-                  });
-                  return const SizedBox();
-                } else {
-                  return SearchResultsSection(
-                    query: _searchController.text,
-                    isSearchConfirmed: false,
-                    onRegionTap: (regionName) {
-                      _searchController.text = regionName;
-                      ref.read(searchQueryProvider.notifier).state = regionName;
-                      ref.read(isSearchConfirmedProvider.notifier).state = true;
-                    },
-                  );
-                }
+                              if (isSearchConfirmed) {
+                                // 검색 확정 시, 검색 결과 화면으로 이동
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) async {
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => SearchCourseListScreen(
+                                        keyword: _searchController.text,
+                                      ),
+                                    ),
+                                  );
+                                  if (mounted) {
+                                    setState(() {});
+                                  }
+                                  // 검색 결과 화면에서 돌아오면 최근 검색어 강제 최신화 (캐시 무시)
+                                  ref.invalidate(recentKeywordsProvider);
+                                  // 검색 확정 상태 초기화 (중복 네비 방지)
+                                  ref
+                                      .read(isSearchConfirmedProvider.notifier)
+                                      .state = false;
+                                });
+                                return const SizedBox();
+                              } else {
+                                return SearchResultsSection(
+                                  query: _searchController.text,
+                                  isSearchConfirmed: false,
+                                  onRegionTap: (regionName) {
+                                    _searchController.text = regionName;
+                                    ref
+                                        .read(searchQueryProvider.notifier)
+                                        .state = regionName;
+                                    ref
+                                        .read(
+                                            isSearchConfirmedProvider.notifier)
+                                        .state = true;
+                                  },
+                                );
+                              }
                             },
                           ),
                   ),

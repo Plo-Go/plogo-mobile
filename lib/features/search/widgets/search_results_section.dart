@@ -7,22 +7,25 @@ import '../widgets/search_course_item.dart';
 import 'package:plogo/features/region/screens/sigungu_course_list_screen.dart';
 import 'package:plogo/features/detail/screens/course_detail_screen.dart';
 
-
 class SearchResultsSection extends ConsumerWidget {
   final String query;
   final bool isSearchConfirmed;
   final void Function(String regionName)? onRegionTap;
-  const SearchResultsSection({required this.query, required this.isSearchConfirmed, this.onRegionTap, super.key});
+  const SearchResultsSection(
+      {required this.query,
+      required this.isSearchConfirmed,
+      this.onRegionTap,
+      super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-  // 검색 확정 여부에 따라 Provider 분기
-  final regionResults = isSearchConfirmed
-    ? ref.watch(regionResultsProvider(query))
-    : AsyncValue.data(ref.watch(filteredRegionProvider(query)));
-  final courseResults = isSearchConfirmed
-    ? ref.watch(courseResultsProvider(query))
-    : AsyncValue.data(ref.watch(filteredCourseProvider(query)));
+    // 검색 확정 여부에 따라 Provider 분기
+    final regionResults = isSearchConfirmed
+        ? ref.watch(regionResultsProvider(query))
+        : AsyncValue.data(ref.watch(filteredRegionProvider(query)));
+    final courseResults = isSearchConfirmed
+        ? ref.watch(courseResultsProvider(query))
+        : AsyncValue.data(ref.watch(filteredCourseProvider(query)));
     return ListView(
       padding: const EdgeInsets.only(top: 0, bottom: 12, left: 12, right: 12),
       children: [

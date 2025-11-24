@@ -55,7 +55,8 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
                   onTap: (keyword) {
                     Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => SearchCourseListScreen(keyword: keyword),
+                        builder: (_) =>
+                            SearchCourseListScreen(keyword: keyword),
                       ),
                     );
                   },

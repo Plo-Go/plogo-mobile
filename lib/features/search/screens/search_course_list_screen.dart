@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:plogo/features/search/providers/search_provider.dart';
+import 'package:plogo/features/search/screens/search_screen.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:plogo/features/search/services/search_api_service.dart';
 import 'package:plogo/shared/widgets/course_list_view.dart';
@@ -10,13 +11,21 @@ import 'package:plogo/features/home/models/course_models.dart';
 
 class SearchCourseListScreen extends ConsumerStatefulWidget {
   final String keyword;
-  const SearchCourseListScreen({super.key, required this.keyword});
+  final bool isFromRecent;
+
+  const SearchCourseListScreen({
+    Key? key,
+    required this.keyword,
+    this.isFromRecent = false,
+  }) : super(key: key);
 
   @override
-  ConsumerState<SearchCourseListScreen> createState() => _SearchCourseListScreenState();
+  ConsumerState<SearchCourseListScreen> createState() =>
+      _SearchCourseListScreenState();
 }
 
-class _SearchCourseListScreenState extends ConsumerState<SearchCourseListScreen> {
+class _SearchCourseListScreenState
+    extends ConsumerState<SearchCourseListScreen> {
   late Future<List<Map<String, dynamic>>> _future;
 
   @override
@@ -28,23 +37,91 @@ class _SearchCourseListScreenState extends ConsumerState<SearchCourseListScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.white,
-      appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, size: 28),
-          onPressed: () {
-            ref.invalidate(recentKeywordsProvider);
-            ref.invalidate(recentCoursesProvider);
-            Navigator.of(context).pop();
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(56),
+        child: GestureDetector(
+          onTap: () {
+            if (widget.isFromRecent) {
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(
+                  builder: (_) => SearchScreen(initialKeyword: widget.keyword),
+                ),
+              );
+            } else {
+              Navigator.of(context).pop();
+            }
           },
+          child: Container(
+            color: AppColors.white,
+            padding: const EdgeInsets.fromLTRB(12, 44, 20, 8),
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.arrow_back_ios_new,
+                      size: 28, color: AppColors.black),
+                  onPressed: () {
+                    ref.invalidate(recentKeywordsProvider);
+                    ref.invalidate(recentCoursesProvider);
+                    if (widget.isFromRecent) {
+                      Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              SearchScreen(initialKeyword: widget.keyword),
+                        ),
+                      );
+                    } else {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Container(
+                    height: 42,
+                    decoration: BoxDecoration(
+                      color: AppColors.greyLight,
+                      borderRadius: BorderRadius.circular(21),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              widget.keyword,
+                              style: const TextStyle(
+                                color: AppColors.black,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                        Image.asset(
+                          'assets/images/search.png',
+                          width: 24,
+                          height: 24,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(
+                            Icons.search,
+                            color: AppColors.grey,
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-        title: Text(widget.keyword,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-        centerTitle: false,
-        backgroundColor: AppColors.white,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-        titleSpacing: 4,
       ),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _future,
@@ -53,15 +130,18 @@ class _SearchCourseListScreenState extends ConsumerState<SearchCourseListScreen>
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text('코스 불러오기 실패'));
+            return const Center(child: Text('코스 불러오기 실패'));
           }
           final courses = snapshot.data ?? [];
           if (courses.isEmpty) {
-            return const Center(child: Text('검색 결과가 없습니다.'));
+            return Center(
+              child: Text("'${widget.keyword}'의 검색결과가 존재하지 않습니다."),
+            );
           }
           return CourseListView(
             title: widget.keyword,
-            courses: courses.map((e) => CourseRecommendItem.fromJson(e)).toList(),
+            courses:
+                courses.map((e) => CourseRecommendItem.fromJson(e)).toList(),
             onCardTap: (courseId, name) async {
               await Navigator.of(context).push(
                 MaterialPageRoute(

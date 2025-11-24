@@ -27,11 +27,11 @@ class _MyPageScreenState extends State<MyPageScreen> {
 
   @override
   void initState() {
-  super.initState();
-  _fetchUserInfo();
-  _fetchSavedCourses();
-  _fetchRecentCourses();
-  _fetchCompletedCourseCount();
+    super.initState();
+    _fetchUserInfo();
+    _fetchSavedCourses();
+    _fetchRecentCourses();
+    _fetchCompletedCourseCount();
   }
 
   Future<void> _fetchRecentCourses() async {
@@ -109,7 +109,9 @@ class _MyPageScreenState extends State<MyPageScreen> {
           else if (userInfo != null)
             ProfileHeader(
               nickname: userInfo!['nickname'] ?? '닉네임',
-              level: completedCourseCount == 0 ? 1 : ((completedCourseCount - 1) ~/ 5) + 1,
+              level: completedCourseCount == 0
+                  ? 1
+                  : ((completedCourseCount - 1) ~/ 5) + 1,
               levelLabel: userInfo!['level'] ?? '새싹 플로거',
               profileImg: userInfo!['profileImg'] ?? '',
               stampCount: userInfo!['stampCount'] ?? 0,

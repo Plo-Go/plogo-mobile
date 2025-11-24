@@ -13,6 +13,7 @@ class SearchApiService {
     }
     return [];
   }
+
   final Dio _dio;
   SearchApiService(this._dio);
 
