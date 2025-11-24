@@ -54,8 +54,7 @@ class _SearchScreenState extends State<SearchScreen> {
       if (keyword.isEmpty) {
         _focusNode.requestFocus();
       } else {
-        ref.refresh(recentKeywordsProvider); // 검색 시 최근 검색어 강제 갱신
-        // regionResultsProvider, courseResultsProvider는 검색 확정 시에만 refresh
+        ref.refresh(recentKeywordsProvider);
       }
     });
   }
@@ -115,7 +114,6 @@ class _SearchScreenState extends State<SearchScreen> {
                                 ref.refresh(recentKeywordsProvider);
                               });
                               if (isSearchConfirmed) {
-                                // 검색 확정 시, 검색 결과 화면으로 이동
                                 WidgetsBinding.instance
                                     .addPostFrameCallback((_) async {
                                   await Navigator.of(context).push(
@@ -128,9 +126,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                   if (mounted) {
                                     setState(() {});
                                   }
-                                  // 검색 결과 화면에서 돌아오면 최근 검색어 강제 최신화 (캐시 무시)
                                   ref.invalidate(recentKeywordsProvider);
-                                  // 검색 확정 상태 초기화 (중복 네비 방지)
                                   ref
                                       .read(isSearchConfirmedProvider.notifier)
                                       .state = false;

@@ -79,7 +79,6 @@ class SearchResultsSection extends ConsumerWidget {
         courseResults.when(
           data: (courses) {
             if (!isSearchConfirmed) {
-              // 입력 중에는 코스 결과만 표시, 안내 메시지는 regionResults에서 처리
               return courses.isEmpty
                   ? const SizedBox()
                   : Column(

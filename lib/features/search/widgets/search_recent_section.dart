@@ -21,8 +21,6 @@ class SearchRecentSection extends StatefulWidget {
 }
 
 class _SearchRecentSectionState extends State<SearchRecentSection> {
-  // didChangeDependencies에서 recentKeywordsProvider refresh 제거
-
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -67,7 +65,7 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
                 error: (_, __) => const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24),
                   child: Text('최근 검색어 불러오기 실패',
-                      style: TextStyle(color: Colors.red)),
+                      style: TextStyle(color: AppColors.grey)),
                 ),
               ),
               const SizedBox(height: 32),
@@ -87,7 +85,7 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
                 error: (_, __) => const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24),
                   child: Text('최근 확인한 코스 불러오기 실패',
-                      style: TextStyle(color: Colors.red)),
+                      style: TextStyle(color: AppColors.grey)),
                 ),
               ),
               const SizedBox(height: 32),

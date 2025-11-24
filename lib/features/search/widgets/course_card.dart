@@ -40,7 +40,6 @@ class CourseCard extends StatelessWidget {
               ),
             ),
           ),
-          // 하단 그라데이션 + 텍스트
           Positioned(
             left: 0,
             right: 0,
