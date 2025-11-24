@@ -182,7 +182,7 @@ class _LogScreenState extends State<LogScreen> {
                 );
                 if (course == null || course.logId == -1) return;
                 showModalBottomSheet(
-                  context: context,
+                  context: Navigator.of(context, rootNavigator: true).context,
                   isScrollControlled: true,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
