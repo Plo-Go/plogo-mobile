@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -5,9 +6,12 @@ import 'package:plogo/shared/theme/app_colors.dart';
 import '../widgets/search_text_field.dart';
 import '../widgets/search_recent_section.dart';
 import '../widgets/search_results_section.dart';
+import 'package:plogo/features/search/screens/search_course_list_screen.dart';
 import 'package:plogo/features/search/providers/search_provider.dart';
 import 'package:plogo/features/search/services/search_service.dart';
 import 'package:plogo/core/api/api_client.dart';
+
+final isSearchConfirmedProvider = StateProvider<bool>((ref) => false);
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({Key? key}) : super(key: key);
@@ -17,6 +21,7 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
+  int _recentSectionKey = DateTime.now().millisecondsSinceEpoch;
   late final TextEditingController _searchController;
   late final FocusNode _focusNode;
   Timer? _debounceTimer;
@@ -49,8 +54,7 @@ class _SearchScreenState extends State<SearchScreen> {
         _focusNode.requestFocus();
       } else {
         ref.refresh(recentKeywordsProvider); // 검색 시 최근 검색어 강제 갱신
-        ref.refresh(regionResultsProvider(keyword)); // 검색 시 시군구 리스트 강제 갱신
-        ref.refresh(courseResultsProvider(keyword)); // 검색 시 코스 조회 강제 갱신
+        // regionResultsProvider, courseResultsProvider는 검색 확정 시에만 refresh
       }
     });
   }
@@ -59,7 +63,8 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
-        final query = ref.watch(searchQueryProvider);
+  final query = ref.watch(searchQueryProvider);
+  final isSearchConfirmed = ref.watch(isSearchConfirmedProvider);
         return WillPopScope(
           onWillPop: () async {
             if (_searchController.text.isNotEmpty) {
@@ -81,7 +86,16 @@ class _SearchScreenState extends State<SearchScreen> {
                   SearchTextField(
                     controller: _searchController,
                     focusNode: _focusNode,
-                    onChanged: () => _onSearchChanged(ref),
+                    onChanged: () {
+                      _onSearchChanged(ref);
+                      ref.read(isSearchConfirmedProvider.notifier).state = false;
+                    },
+                    onSubmitted: (value) {
+                      final keyword = value.trim();
+                      ref.read(isSearchConfirmedProvider.notifier).state = true;
+                      ref.refresh(regionResultsProvider(keyword));
+                      ref.refresh(courseResultsProvider(keyword));
+                    },
                   ),
                   Expanded(
                     child: _searchController.text.isEmpty
@@ -98,8 +112,36 @@ class _SearchScreenState extends State<SearchScreen> {
                                     listen: false);
                                 ref.refresh(recentKeywordsProvider);
                               });
-                              return SearchResultsSection(
-                                  query: _searchController.text);
+                if (isSearchConfirmed) {
+                  // 검색 확정 시, 검색 결과 화면으로 이동
+                  WidgetsBinding.instance.addPostFrameCallback((_) async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => SearchCourseListScreen(
+                          keyword: _searchController.text,
+                        ),
+                      ),
+                    );
+                    if (mounted) {
+                      setState(() {});
+                    }
+                    // 검색 결과 화면에서 돌아오면 최근 검색어 강제 최신화 (캐시 무시)
+                    ref.invalidate(recentKeywordsProvider);
+                    // 검색 확정 상태 초기화 (중복 네비 방지)
+                    ref.read(isSearchConfirmedProvider.notifier).state = false;
+                  });
+                  return const SizedBox();
+                } else {
+                  return SearchResultsSection(
+                    query: _searchController.text,
+                    isSearchConfirmed: false,
+                    onRegionTap: (regionName) {
+                      _searchController.text = regionName;
+                      ref.read(searchQueryProvider.notifier).state = regionName;
+                      ref.read(isSearchConfirmedProvider.notifier).state = true;
+                    },
+                  );
+                }
                             },
                           ),
                   ),

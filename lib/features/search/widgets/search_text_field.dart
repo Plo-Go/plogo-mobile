@@ -6,12 +6,14 @@ class SearchTextField extends StatelessWidget {
   final TextEditingController controller;
   final FocusNode focusNode;
   final VoidCallback onChanged;
+  final ValueChanged<String>? onSubmitted;
 
   const SearchTextField({
     super.key,
     required this.controller,
     required this.focusNode,
     required this.onChanged,
+    this.onSubmitted,
   });
 
   @override
@@ -64,20 +66,15 @@ class SearchTextField extends StatelessWidget {
                         isDense: true,
                       ),
                       onChanged: (_) => onChanged(),
+                      onSubmitted: onSubmitted,
                     ),
                   ),
                   const SizedBox(width: 8),
-                  if (controller.text.isNotEmpty)
-                    GestureDetector(
-                      onTap: () {
-                        controller.clear();
-                        onChanged();
-                      },
-                      child: const Icon(Icons.close,
-                          size: 20, color: AppColors.grey),
-                    )
-                  else
-                    Image.asset(
+                  GestureDetector(
+                    onTap: () {
+                      onSubmitted?.call(controller.text);
+                    },
+                    child: Image.asset(
                       'assets/images/search.png',
                       width: 24,
                       height: 24,
@@ -88,6 +85,7 @@ class SearchTextField extends StatelessWidget {
                         size: 24,
                       ),
                     ),
+                  ),
                   const SizedBox(width: 8),
                 ],
               ),
