@@ -22,23 +22,25 @@ class SearchResultsSection extends ConsumerWidget {
           data: (regions) => regions.isEmpty
               ? const SizedBox()
               : Column(
-                  children: regions.map((region) => GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => SigunguCourseListScreen(
-                            regionName: region['sigunguName'] ?? '',
-                            sigunguId: region['sigunguId'],
-                          ),
-                        ),
-                      );
-                    },
-                    child: SearchRegionItem(
-                      query: query,
-                      name: region['sigunguName'] ?? '',
-                      fullName: region['withArea'] ?? '',
-                    ),
-                  )).toList(),
+                  children: regions
+                      .map((region) => GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => SigunguCourseListScreen(
+                                    regionName: region['sigunguName'] ?? '',
+                                    sigunguId: region['sigunguId'],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: SearchRegionItem(
+                              query: query,
+                              name: region['sigunguName'] ?? '',
+                              fullName: region['withArea'] ?? '',
+                            ),
+                          ))
+                      .toList(),
                 ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, __) => const SizedBox(),
@@ -59,26 +61,29 @@ class SearchResultsSection extends ConsumerWidget {
                   ),
                 )
               : Column(
-                  children: courses.map((course) => GestureDetector(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => CourseDetailScreen(
-                            courseId: course['course_id'],
-                            title: course['name'],
-                          ),
-                        ),
-                      );
-                    },
-                    child: SearchCourseItem(
-                      query: query,
-                      name: course['name'] ?? '',
-                      address: course['area'] ?? '',
-          iconPath: (course['image'] != null && course['image'].toString().isNotEmpty)
-            ? course['image']
-            : 'assets/images/no_image.png',
-                    ),
-                  )).toList(),
+                  children: courses
+                      .map((course) => GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => CourseDetailScreen(
+                                    courseId: course['course_id'],
+                                    title: course['name'],
+                                  ),
+                                ),
+                              );
+                            },
+                            child: SearchCourseItem(
+                              query: query,
+                              name: course['name'] ?? '',
+                              address: course['area'] ?? '',
+                              iconPath: (course['image'] != null &&
+                                      course['image'].toString().isNotEmpty)
+                                  ? course['image']
+                                  : 'assets/images/no_image.png',
+                            ),
+                          ))
+                      .toList(),
                 ),
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (_, __) => const SizedBox(),

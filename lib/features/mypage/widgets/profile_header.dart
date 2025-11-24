@@ -91,10 +91,10 @@ class ProfileHeader extends StatelessWidget {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: List.generate(5, (i) {
-                        // stampCount % 5 만큼만 채움
+                        // stampCount % 5 == 0이면 5개 모두 채움
                         const double filledSize = 24.0;
                         const double emptySize = 22.0;
-                        final filled = i < (stampCount % 5);
+                        final filled = i < ((stampCount % 5 == 0 && stampCount != 0) ? 5 : (stampCount % 5));
                         final size = filled ? filledSize : emptySize;
                         return Padding(
                           padding: EdgeInsets.only(

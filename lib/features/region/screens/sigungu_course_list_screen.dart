@@ -8,10 +8,12 @@ import 'package:plogo/features/detail/screens/course_detail_screen.dart';
 class SigunguCourseListScreen extends StatefulWidget {
   final String regionName;
   final int sigunguId;
-  const SigunguCourseListScreen({super.key, required this.regionName, required this.sigunguId});
+  const SigunguCourseListScreen(
+      {super.key, required this.regionName, required this.sigunguId});
 
   @override
-  State<SigunguCourseListScreen> createState() => _SigunguCourseListScreenState();
+  State<SigunguCourseListScreen> createState() =>
+      _SigunguCourseListScreenState();
 }
 
 class _SigunguCourseListScreenState extends State<SigunguCourseListScreen> {
@@ -32,7 +34,8 @@ class _SigunguCourseListScreenState extends State<SigunguCourseListScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, size: 28),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(widget.regionName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+        title: Text(widget.regionName,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
         centerTitle: false,
         backgroundColor: AppColors.white,
         elevation: 0,
@@ -65,7 +68,8 @@ class _SigunguCourseListScreenState extends State<SigunguCourseListScreen> {
                 ),
               );
               setState(() {
-                _future = SigunguCourseService().getCoursesBySigungu(widget.sigunguId);
+                _future = SigunguCourseService()
+                    .getCoursesBySigungu(widget.sigunguId);
               });
             },
           );

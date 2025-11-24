@@ -25,6 +25,7 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
     final ref = ProviderScope.containerOf(context, listen: false);
     ref.refresh(recentCoursesProvider);
   }
+
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -40,63 +41,73 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-          recentKeywords.when(
-            data: (keywords) => RecentSearches(
-              keywords: keywords,
-              onDelete: (keyword) async {
-                final success = await SearchService(apiClient.dio).deleteKeyword(keyword);
-                if (success) {
-                  ref.refresh(recentKeywordsProvider);
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('검색어 삭제에 실패했습니다')),
-                  );
-                }
-              },
-              onTap: (keyword) {
-                if (widget.searchController != null && widget.focusNode != null) {
-                  widget.searchController!.text = keyword;
-                  widget.focusNode!.unfocus();
-                  ref.read(searchQueryProvider.notifier).state = keyword;
-                  ref.refresh(recentKeywordsProvider); // 클릭 시 최근검색어 즉시 갱신
-                  ref.refresh(regionResultsProvider(keyword)); // 클릭 시 시군구 리스트 강제 갱신
-                  ref.refresh(courseResultsProvider(keyword)); // 클릭 시 코스 조회 강제 갱신
-                }
-              },
-            ),
-            loading: () => const SizedBox(height: 40, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Text('최근 검색어 불러오기 실패', style: TextStyle(color: Colors.red)),
-            ),
-          ),
-          const SizedBox(height: 32),
-          recentCourses.when(
-            data: (items) => RecentViewedCoursesSection(
-              items: items,
-              onCardTap: (courseId, name) async {
-                if (context.mounted) {
-                  await context.push('/home/detail/$courseId', extra: name);
+              recentKeywords.when(
+                data: (keywords) => RecentSearches(
+                  keywords: keywords,
+                  onDelete: (keyword) async {
+                    final success = await SearchService(apiClient.dio)
+                        .deleteKeyword(keyword);
+                    if (success) {
+                      ref.refresh(recentKeywordsProvider);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('검색어 삭제에 실패했습니다')),
+                      );
+                    }
+                  },
+                  onTap: (keyword) {
+                    if (widget.searchController != null &&
+                        widget.focusNode != null) {
+                      widget.searchController!.text = keyword;
+                      widget.focusNode!.unfocus();
+                      ref.read(searchQueryProvider.notifier).state = keyword;
+                      ref.refresh(recentKeywordsProvider); // 클릭 시 최근검색어 즉시 갱신
+                      ref.refresh(
+                          regionResultsProvider(keyword)); // 클릭 시 시군구 리스트 강제 갱신
+                      ref.refresh(
+                          courseResultsProvider(keyword)); // 클릭 시 코스 조회 강제 갱신
+                    }
+                  },
+                ),
+                loading: () => const SizedBox(
+                    height: 40,
+                    child: Center(child: CircularProgressIndicator())),
+                error: (_, __) => const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Text('최근 검색어 불러오기 실패',
+                      style: TextStyle(color: Colors.red)),
+                ),
+              ),
+              const SizedBox(height: 32),
+              recentCourses.when(
+                data: (items) => RecentViewedCoursesSection(
+                  items: items,
+                  onCardTap: (courseId, name) async {
+                    if (context.mounted) {
+                      await context.push('/home/detail/$courseId', extra: name);
+                      ref.refresh(recentCoursesProvider);
+                    }
+                  },
+                ),
+                loading: () => const SizedBox(
+                    height: 128,
+                    child: Center(child: CircularProgressIndicator())),
+                error: (_, __) => const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24),
+                  child: Text('최근 확인한 코스 불러오기 실패',
+                      style: TextStyle(color: Colors.red)),
+                ),
+              ),
+              const SizedBox(height: 32),
+              PopularCoursesSection(
+                onRefreshRecentCourses: () {
                   ref.refresh(recentCoursesProvider);
-                }
-              },
-            ),
-            loading: () => const SizedBox(height: 128, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24),
-              child: Text('최근 확인한 코스 불러오기 실패', style: TextStyle(color: Colors.red)),
-            ),
+                },
+              ),
+              const SizedBox(height: 32),
+            ],
           ),
-          const SizedBox(height: 32),
-          PopularCoursesSection(
-            onRefreshRecentCourses: () {
-              ref.refresh(recentCoursesProvider);
-            },
-          ),
-          const SizedBox(height: 32),
-        ],
-      ),
-    );
+        );
       },
     );
   }

@@ -10,17 +10,24 @@ final recentKeywordsProvider = FutureProvider<List<String>>((ref) async {
   return SearchService(apiClient.dio).getRecentKeywords();
 });
 
-final recentCoursesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final recentCoursesProvider =
+    FutureProvider<List<Map<String, dynamic>>>((ref) async {
   return MyPageService(apiClient.dio).getRecentCourses();
 });
 
-final regionResultsProvider = FutureProvider.family<List<Map<String, dynamic>>, String>((ref, query) async {
+final regionResultsProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>(
+        (ref, query) async {
   if (query.isEmpty) return [];
   final regions = await SearchApiService(apiClient.dio).getSigunguList();
-  return regions.where((r) => r['sigunguName']?.toString().contains(query) ?? false).toList();
+  return regions
+      .where((r) => r['sigunguName']?.toString().contains(query) ?? false)
+      .toList();
 });
 
-final courseResultsProvider = FutureProvider.family<List<Map<String, dynamic>>, String>((ref, query) async {
+final courseResultsProvider =
+    FutureProvider.family<List<Map<String, dynamic>>, String>(
+        (ref, query) async {
   if (query.isEmpty) return [];
   return SearchApiService(apiClient.dio).searchCourses(query);
 });

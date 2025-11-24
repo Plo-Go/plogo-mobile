@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:plogo/shared/widgets/top_bar.dart';
+import 'package:plogo/features/log/services/log_service.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:plogo/features/log/services/geocoding_service.dart';
+import 'package:plogo/features/log/widgets/course_record_modal.dart';
 
 class LogScreen extends StatefulWidget {
   const LogScreen({super.key});
@@ -10,45 +14,115 @@ class LogScreen extends StatefulWidget {
 }
 
 class _LogScreenState extends State<LogScreen> {
+  /// 지도 로딩 실패 시 대체 UI
+  Widget _buildFallbackMap() {
+    return Container(
+      color: const Color(0xFFF5F5F5),
+      child: const Center(
+        child: Text(
+          '카카오 맵 로딩 실패',
+          style: TextStyle(color: Colors.grey, fontSize: 16),
+          textAlign: TextAlign.center,
+        ),
+      ),
+    );
+  }
+
+  final GeocodingService _geocodingService = GeocodingService();
+  Map<int, LatLng> courseLatLngMap = {};
   KakaoMapController? mapController;
   bool _mapLoadFailed = false;
   bool _mapReady = false;
   String? _markerImageDataUri;
 
-  static final LatLng _centerPosition = LatLng(36.5, 127.5);
-  static final LatLng _markerPosition = LatLng(37.5665, 126.9780); // 서울
+  LatLng _centerPosition = LatLng(36.5, 127.5);
 
-  List<Marker> get _markers {
-    // 커스텀 이미지가 로드되면 적용, 아니면 기본 마커
-    final marker = Marker(
-      markerId: 'plogging_course_1',
-      latLng: _markerPosition,
-      infoWindowContent: '플로깅 코스 A',
-      width: 24,
-      height: 24,
-    );
-
-    // Base64 이미지가 준비되면 커스텀 이미지 적용
-    if (_markerImageDataUri != null) {
-      return [
-        Marker(
-          markerId: marker.markerId,
-          latLng: marker.latLng,
-          infoWindowContent: marker.infoWindowContent,
-          markerImageSrc: _markerImageDataUri!,
-          width: marker.width,
-          height: marker.height,
-        ),
-      ];
-    }
-
-    return [marker]; // 기본 마커
-  }
+  List<CompletedCourse> completedCourses = [];
 
   @override
   void initState() {
     super.initState();
+    dotenv.load();
     _loadMarkerImage();
+    _fetchCompletedCourses();
+  }
+
+  // 주소 파싱
+  Future<LatLng?> _tryParseAddress(String address, String name) async {
+    // 1. 전체 주소로 시도
+    LatLng? latLng = await _geocodingService.getLatLngFromAddress(address);
+    if (latLng != null) return latLng;
+
+    // 2. 코스명으로 시도
+    latLng = await _geocodingService.getLatLngFromAddress(name);
+    if (latLng != null) return latLng;
+
+    // 3. 주소에서 시/도만 추출해서 시도
+    final regExp =
+        RegExp(r'([가-힣]+도|서울특별시|부산광역시|대구광역시|인천광역시|광주광역시|대전광역시|울산광역시|세종특별자치시)');
+    final match = regExp.firstMatch(address);
+    if (match != null) {
+      final region = match.group(0);
+      if (region != null) {
+        latLng = await _geocodingService.getLatLngFromAddress(region);
+        if (latLng != null) return latLng;
+      }
+    }
+    // 4. 최종 안될경우 null 반환
+    return null;
+  }
+
+  Future<void> _fetchCompletedCourses() async {
+    final list = await LogService().getCompletedCourses();
+    print('[완주 코스 리스트]');
+    for (var course in list) {
+      print(
+          'logId: \u001b[32m${course.logId}\u001b[0m, address: ${course.address}, name: ${course.name}');
+    }
+    // 각 코스 address를 좌표로 변환 (파싱 강화)
+    for (var course in list) {
+      LatLng? latLng = await _tryParseAddress(course.address, course.name);
+      if (latLng != null) {
+        courseLatLngMap[course.logId] = latLng;
+        print(
+            '[지오코딩] logId: ${course.logId}, lat: ${latLng.latitude}, lng: ${latLng.longitude}');
+      } else {
+        print(
+            '[지오코딩 실패] logId: ${course.logId}, address: ${course.address}, name: ${course.name}');
+        // 위치 미상 마커 등으로 처리 가능 (지도에 표시 X 또는 특수 마커)
+      }
+    }
+    // 모든 마커 좌표가 세팅된 후, 중심 좌표 계산
+    if (courseLatLngMap.isNotEmpty) {
+      final latLngs = courseLatLngMap.values.toList();
+      final avgLat = latLngs.map((e) => e.latitude).reduce((a, b) => a + b) /
+          latLngs.length;
+      final avgLng = latLngs.map((e) => e.longitude).reduce((a, b) => a + b) /
+          latLngs.length;
+      setState(() {
+        _centerPosition = LatLng(avgLat, avgLng);
+      });
+      print('[지도 중심] lat: $avgLat, lng: $avgLng');
+    }
+    print('[마커 개수] ${courseLatLngMap.length}');
+    if (mounted) setState(() => completedCourses = list);
+  }
+
+  List<Marker> get _markers {
+    final markers = <Marker>[];
+    for (var course in completedCourses) {
+      final latLng = courseLatLngMap[course.logId] ?? _centerPosition;
+      debugPrint(
+          '[마커 생성] logId: ${course.logId}, name: ${course.name}, address: ${course.address}, lat: ${latLng.latitude}, lng: ${latLng.longitude}');
+      markers.add(Marker(
+        markerId: 'completed_${course.logId}',
+        latLng: latLng,
+        markerImageSrc: _markerImageDataUri ?? '',
+        width: 36,
+        height: 36,
+      ));
+    }
+    return markers;
   }
 
   /// 마커 이미지 URL 설정
@@ -108,19 +182,21 @@ class _LogScreenState extends State<LogScreen> {
               center: _centerPosition,
               markers: _markers,
               onMarkerTap: (String markerId, LatLng latLng, int index) {
+                // 마커 클릭 시, 코스 정보로 모달창 표시
+                final course = completedCourses.firstWhere(
+                  (c) => 'completed_${c.logId}' == markerId,
+                  orElse: () =>
+                      CompletedCourse.empty(), // CompletedCourse에 empty 생성자 필요
+                );
+                if (course == null || course.logId == -1) return;
                 showModalBottomSheet(
-                  context: context,
-                  builder: (context) => SizedBox(
-                    height: 200,
-                    child: Center(
-                      child: Text(
-                        '마커 $markerId 클릭됨\n'
-                        '(${latLng.latitude}, ${latLng.longitude})',
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(fontSize: 15),
-                      ),
-                    ),
+                  context: Navigator.of(context, rootNavigator: true).context,
+                  isScrollControlled: true,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(16)),
                   ),
+                  builder: (context) => CourseRecordModal(course: course),
                 );
               },
             ),
@@ -134,19 +210,5 @@ class _LogScreenState extends State<LogScreen> {
       });
       return _buildFallbackMap();
     }
-  }
-
-  /// 지도 로딩 실패 시 대체 UI
-  Widget _buildFallbackMap() {
-    return Container(
-      color: const Color(0xFFF5F5F5),
-      child: const Center(
-        child: Text(
-          '카카오 맵 로딩 실패',
-          style: TextStyle(color: Colors.grey, fontSize: 16),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
   }
 }

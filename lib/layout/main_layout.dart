@@ -39,7 +39,10 @@ class MainLayout extends StatelessWidget {
         child: AppBottomNavBar(
           currentIndex: currentIndex,
           onTap: (index) {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            // 모달이 남아있으면 반복적으로 pop 시도
+            while (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            }
             onTap(index);
           },
           iconSize: iconSize,

@@ -89,7 +89,8 @@ class SearchCourseItem extends StatelessWidget {
                         width: 60,
                         height: 60,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
                           Icons.image,
                           color: AppColors.grey,
                           size: 30,
@@ -100,7 +101,8 @@ class SearchCourseItem extends StatelessWidget {
                         width: 60,
                         height: 60,
                         fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) => const Icon(
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Icon(
                           Icons.image,
                           color: AppColors.grey,
                           size: 30,

@@ -60,7 +60,8 @@ class RecentSearches extends StatelessWidget {
                     side: const BorderSide(color: AppColors.greyLight),
                   ),
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: const VisualDensity(horizontal: 0, vertical: 0),
+                  visualDensity:
+                      const VisualDensity(horizontal: 0, vertical: 0),
                 ),
               );
             },

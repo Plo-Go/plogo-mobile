@@ -45,7 +45,8 @@ class CourseListView extends StatelessWidget {
                           onCardTap!(course.courseId, course.name);
                         } else {
                           // 기존 상세페이지 이동 로직
-                          final location = GoRouterState.of(context).matchedLocation;
+                          final location =
+                              GoRouterState.of(context).matchedLocation;
                           String detailRoute;
                           if (location.startsWith('/log')) {
                             detailRoute = '/log/detail/${course.courseId}';

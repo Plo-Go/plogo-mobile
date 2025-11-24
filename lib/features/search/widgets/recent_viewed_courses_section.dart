@@ -59,7 +59,9 @@ class RecentViewedCoursesSection extends StatelessWidget {
                     CourseCard(
                       name: item['name'] ?? '이름',
                       location: item['area'] ?? item['location'] ?? '위치',
-                      imagePath: item['image'] ?? item['imagePath'] ?? 'assets/images/sample.png',
+                      imagePath: item['image'] ??
+                          item['imagePath'] ??
+                          'assets/images/sample.png',
                       isSave: item['isSave'] == true,
                       onTap: () async {
                         final courseId = item['course_id'] ?? item['courseId'];
