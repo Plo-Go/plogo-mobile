@@ -8,6 +8,7 @@ import 'package:plogo/features/auth/services/auth_service.dart';
 import 'package:plogo/features/mypage/services/mypage_service.dart';
 import 'package:plogo/core/api/api_client.dart';
 import 'package:go_router/go_router.dart';
+import 'package:plogo/features/log/services/log_service.dart';
 
 class MyPageScreen extends StatefulWidget {
   const MyPageScreen({super.key});
@@ -20,15 +21,17 @@ class _MyPageScreenState extends State<MyPageScreen> {
   Map<String, dynamic>? userInfo;
   List<Map<String, dynamic>> savedCourses = [];
   List<Map<String, dynamic>> recentCourses = [];
+  int completedCourseCount = 0;
   bool loading = true;
   String? error;
 
   @override
   void initState() {
-    super.initState();
-    _fetchUserInfo();
-    _fetchSavedCourses();
-    _fetchRecentCourses();
+  super.initState();
+  _fetchUserInfo();
+  _fetchSavedCourses();
+  _fetchRecentCourses();
+  _fetchCompletedCourseCount();
   }
 
   Future<void> _fetchRecentCourses() async {
@@ -75,6 +78,20 @@ class _MyPageScreenState extends State<MyPageScreen> {
     }
   }
 
+  Future<void> _fetchCompletedCourseCount() async {
+    try {
+      final completedCourses = await LogService().getCompletedCourses();
+      setState(() {
+        completedCourseCount = completedCourses.length;
+      });
+    } catch (e) {
+      print('[완주 코스 개수 에러] $e');
+      setState(() {
+        completedCourseCount = 0;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // 저장 코스 목록 (API 연동)
@@ -92,7 +109,7 @@ class _MyPageScreenState extends State<MyPageScreen> {
           else if (userInfo != null)
             ProfileHeader(
               nickname: userInfo!['nickname'] ?? '닉네임',
-              level: int.tryParse(userInfo!['level'] ?? '1') ?? 1,
+              level: completedCourseCount == 0 ? 1 : ((completedCourseCount - 1) ~/ 5) + 1,
               levelLabel: userInfo!['level'] ?? '새싹 플로거',
               profileImg: userInfo!['profileImg'] ?? '',
               stampCount: userInfo!['stampCount'] ?? 0,
