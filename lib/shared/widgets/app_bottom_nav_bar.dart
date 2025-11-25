@@ -22,41 +22,54 @@ class AppBottomNavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      currentIndex: currentIndex,
-      onTap: onTap,
-      type: BottomNavigationBarType.fixed,
-      backgroundColor: AppColors.white,
-      elevation: 8,
-      selectedItemColor: AppColors.black,
-      unselectedItemColor: AppColors.grey,
-      showSelectedLabels: true,
-      showUnselectedLabels: true,
-      selectedLabelStyle: TextStyle(
-        fontSize: selectedFontSize,
-        fontWeight: FontWeight.w600,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 16,
+            spreadRadius: 0,
+            offset: Offset(0, -4), // 위쪽 그림자
+          ),
+        ],
       ),
-      unselectedLabelStyle: TextStyle(
-        fontSize: unselectedFontSize,
-        fontWeight: FontWeight.w400,
+      child: BottomNavigationBar(
+        currentIndex: currentIndex,
+        onTap: onTap,
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        selectedItemColor: AppColors.black,
+        unselectedItemColor: AppColors.grey,
+        showSelectedLabels: true,
+        showUnselectedLabels: true,
+        selectedLabelStyle: TextStyle(
+          fontSize: selectedFontSize,
+          fontWeight: FontWeight.w600,
+        ),
+        unselectedLabelStyle: TextStyle(
+          fontSize: unselectedFontSize,
+          fontWeight: FontWeight.w400,
+        ),
+        items: [
+          _buildNavItem(
+            iconPath: 'assets/icons/homeIcon.png',
+            activeIconPath: 'assets/icons/homeIcon_filled.png',
+            label: '홈',
+          ),
+          _buildNavItem(
+            iconPath: 'assets/icons/mapIcon.png',
+            activeIconPath: 'assets/icons/mapIcon_filled.png',
+            label: '로그',
+          ),
+          _buildNavItem(
+            iconPath: 'assets/icons/myIcon.png',
+            activeIconPath: 'assets/icons/myIcon_filled.png',
+            label: '마이',
+          ),
+        ],
       ),
-      items: [
-        _buildNavItem(
-          iconPath: 'assets/icons/homeIcon.png',
-          activeIconPath: 'assets/icons/homeIcon_filled.png',
-          label: '홈',
-        ),
-        _buildNavItem(
-          iconPath: 'assets/icons/mapIcon.png',
-          activeIconPath: 'assets/icons/mapIcon_filled.png',
-          label: '로그',
-        ),
-        _buildNavItem(
-          iconPath: 'assets/icons/myIcon.png',
-          activeIconPath: 'assets/icons/myIcon_filled.png',
-          label: '마이',
-        ),
-      ],
     );
   }
 

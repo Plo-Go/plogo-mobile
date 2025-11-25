@@ -3,7 +3,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Kakao JS SDK가 http://t1.daumcdn.net 리소스를 로드하므로 cleartext 허용 필요 (개발 단계) -->
     <application
-        android:label="plogo"
+        android:label="PloGo"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:enableOnBackInvokedCallback="true"

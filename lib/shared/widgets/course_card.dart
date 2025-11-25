@@ -22,69 +22,70 @@ class CourseCard extends StatelessWidget {
     final isNetworkImage =
         imagePath.startsWith('http://') || imagePath.startsWith('https://');
     final isEmptyImage = imagePath.isEmpty || imagePath == 'string';
-    return Container(
-      width: 128,
-      height: 128,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: AppColors.greyLight,
-      ),
-      clipBehavior: Clip.hardEdge,
-      child: Stack(
-        children: [
-          // 배경 이미지
-          Positioned.fill(
-            child: isEmptyImage
-                ? Image.asset(
-                    'assets/images/no_image.png',
-                    fit: BoxFit.cover,
-                  )
-                : isNetworkImage
-                    ? Image.network(
-                        imagePath,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          print('[이미지 로딩 에러] URL: $imagePath, error: $error');
-                          return Image.asset(
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        width: 128,
+        height: 128,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          color: AppColors.greyLight,
+        ),
+        clipBehavior: Clip.hardEdge,
+        child: Stack(
+          children: [
+            // 배경 이미지
+            Positioned.fill(
+              child: isEmptyImage
+                  ? Image.asset(
+                      'assets/images/no_image.png',
+                      fit: BoxFit.cover,
+                    )
+                  : isNetworkImage
+                      ? Image.network(
+                          imagePath,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) {
+                            print('[이미지 로딩 에러] URL: $imagePath, error: $error');
+                            return Image.asset(
+                              'assets/images/no_image.png',
+                              fit: BoxFit.cover,
+                            );
+                          },
+                        )
+                      : Image.asset(
+                          imagePath,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              Image.asset(
                             'assets/images/no_image.png',
                             fit: BoxFit.cover,
-                          );
-                        },
-                      )
-                    : Image.asset(
-                        imagePath,
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) =>
-                            Image.asset(
-                          'assets/images/no_image.png',
-                          fit: BoxFit.cover,
+                          ),
                         ),
-                      ),
-          ),
-          // 하단 그라데이션 + 텍스트
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withOpacity(0.7),
-                  ],
+            ),
+            // 하단 그라데이션 + 텍스트
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withOpacity(0.7),
+                    ],
+                  ),
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  InkWell(
-                    onTap: onTap,
-                    child: Text(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
                       name,
                       style: const TextStyle(
                         color: Colors.white,
@@ -94,32 +95,32 @@ class CourseCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    location,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.8),
-                      fontSize: 12,
+                    const SizedBox(height: 4),
+                    Text(
+                      location,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 12,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
-          // 북마크 아이콘 (배경 없음)
-          Positioned(
-            top: 8,
-            right: 8,
-            child: Icon(
-              isSave ? Icons.bookmark : Icons.bookmark_border,
-              color: isSave ? Colors.white : AppColors.white,
-              size: 24,
+            // 북마크 아이콘 (배경 없음)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Icon(
+                isSave ? Icons.bookmark : Icons.bookmark_border,
+                color: isSave ? Colors.white : AppColors.white,
+                size: 24,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

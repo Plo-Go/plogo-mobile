@@ -5,26 +5,32 @@ import 'package:plogo/shared/theme/app_colors.dart';
 import '../widgets/search_text_field.dart';
 import '../widgets/search_recent_section.dart';
 import '../widgets/search_results_section.dart';
+import 'package:plogo/features/search/screens/search_course_list_screen.dart';
 import 'package:plogo/features/search/providers/search_provider.dart';
-import 'package:plogo/features/search/services/search_service.dart';
 import 'package:plogo/core/api/api_client.dart';
+import 'package:plogo/features/auth/providers/auth_controller.dart';
+import 'package:go_router/go_router.dart';
+
+final isSearchConfirmedProvider = StateProvider<bool>((ref) => false);
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({Key? key}) : super(key: key);
+  final String? initialKeyword;
+  const SearchScreen({Key? key, this.initialKeyword}) : super(key: key);
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  late final TextEditingController _searchController;
-  late final FocusNode _focusNode;
+  late TextEditingController _searchController;
+  late FocusNode _focusNode;
   Timer? _debounceTimer;
 
   @override
   void initState() {
     super.initState();
-    _searchController = TextEditingController();
+    _searchController =
+        TextEditingController(text: widget.initialKeyword ?? '');
     _focusNode = FocusNode();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _focusNode.requestFocus();
@@ -48,9 +54,7 @@ class _SearchScreenState extends State<SearchScreen> {
       if (keyword.isEmpty) {
         _focusNode.requestFocus();
       } else {
-        ref.refresh(recentKeywordsProvider); // 검색 시 최근 검색어 강제 갱신
-        ref.refresh(regionResultsProvider(keyword)); // 검색 시 시군구 리스트 강제 갱신
-        ref.refresh(courseResultsProvider(keyword)); // 검색 시 코스 조회 강제 갱신
+        ref.refresh(recentKeywordsProvider);
       }
     });
   }
@@ -59,7 +63,9 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
+        final isLoggedIn = ref.watch(authProvider.select((s) => s.isLoggedIn));
         final query = ref.watch(searchQueryProvider);
+        final isSearchConfirmed = ref.watch(isSearchConfirmedProvider);
         return WillPopScope(
           onWillPop: () async {
             if (_searchController.text.isNotEmpty) {
@@ -81,7 +87,17 @@ class _SearchScreenState extends State<SearchScreen> {
                   SearchTextField(
                     controller: _searchController,
                     focusNode: _focusNode,
-                    onChanged: () => _onSearchChanged(ref),
+                    onChanged: () {
+                      _onSearchChanged(ref);
+                      ref.read(isSearchConfirmedProvider.notifier).state =
+                          false;
+                    },
+                    onSubmitted: (value) {
+                      final keyword = value.trim();
+                      ref.read(isSearchConfirmedProvider.notifier).state = true;
+                      ref.refresh(regionResultsProvider(keyword));
+                      ref.refresh(courseResultsProvider(keyword));
+                    },
                   ),
                   Expanded(
                     child: _searchController.text.isEmpty
@@ -98,8 +114,41 @@ class _SearchScreenState extends State<SearchScreen> {
                                     listen: false);
                                 ref.refresh(recentKeywordsProvider);
                               });
-                              return SearchResultsSection(
-                                  query: _searchController.text);
+                              if (isSearchConfirmed) {
+                                WidgetsBinding.instance
+                                    .addPostFrameCallback((_) async {
+                                  await Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (_) => SearchCourseListScreen(
+                                        keyword: _searchController.text,
+                                      ),
+                                    ),
+                                  );
+                                  if (mounted) {
+                                    setState(() {});
+                                  }
+                                  ref.invalidate(recentKeywordsProvider);
+                                  ref
+                                      .read(isSearchConfirmedProvider.notifier)
+                                      .state = false;
+                                });
+                                return const SizedBox();
+                              } else {
+                                return SearchResultsSection(
+                                  query: _searchController.text,
+                                  isSearchConfirmed: false,
+                                  onRegionTap: (regionName) {
+                                    _searchController.text = regionName;
+                                    ref
+                                        .read(searchQueryProvider.notifier)
+                                        .state = regionName;
+                                    ref
+                                        .read(
+                                            isSearchConfirmedProvider.notifier)
+                                        .state = true;
+                                  },
+                                );
+                              }
                             },
                           ),
                   ),

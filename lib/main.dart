@@ -6,6 +6,11 @@ import 'package:kakao_flutter_sdk_user/kakao_flutter_sdk_user.dart';
 import 'core/router/app_router.dart';
 import 'core/api/api_client.dart';
 import 'shared/theme/app_theme.dart';
+import 'features/auth/providers/user_info_provider.dart';
+import 'features/auth/screens/login_screen.dart';
+import 'features/auth/providers/auth_controller.dart';
+
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // 플러그인 초기화용
@@ -27,7 +32,7 @@ void main() async {
   apiClient.init();
 
   runApp(
-    const ProviderScope(
+    ProviderScope(
       child: MyApp(),
     ),
   );
@@ -38,11 +43,19 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'PloGo',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      routerConfig: appRouter,
+    return Consumer(
+      builder: (context, ref, _) {
+        return MaterialApp.router(
+          routerConfig: ref.watch(appRouterProvider),
+          title: 'PloGo',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          builder: (context, child) {
+            // 로그아웃 상태면 로그인 화면으로 이동
+            return child!;
+          },
+        );
+      },
     );
   }
 }

@@ -1,8 +1,27 @@
+import 'package:plogo/main.dart';
 import 'package:dio/dio.dart';
 import 'api_exceptions.dart';
 import '../../features/auth/services/token_storage.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/auth/providers/user_info_provider.dart';
+import 'package:plogo/features/auth/providers/auth_controller.dart';
 
 class ApiInterceptor extends Interceptor {
+  @override
+  void onError(DioException err, ErrorInterceptorHandler handler) async {
+    if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
+      await TokenStorage.clearTokens();
+      AuthController.instance.logout();
+    }
+    final error = _handleError(err);
+    handler.reject(DioException(
+      requestOptions: err.requestOptions,
+      error: error,
+      response: err.response,
+    ));
+  }
+
   @override
   void onRequest(
       RequestOptions options, RequestInterceptorHandler handler) async {
@@ -18,20 +37,6 @@ class ApiInterceptor extends Interceptor {
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
     super.onResponse(response, handler);
-  }
-
-  @override
-  void onError(DioException err, ErrorInterceptorHandler handler) async {
-    if (err.response?.statusCode == 401 || err.response?.statusCode == 403) {
-      await TokenStorage.clearTokens();
-      // TODO: 로그아웃 후 로그인 화면 이동 처리
-    }
-    final error = _handleError(err);
-    handler.reject(DioException(
-      requestOptions: err.requestOptions,
-      error: error,
-      response: err.response,
-    ));
   }
 
   Exception _handleError(DioException error) {

@@ -34,7 +34,7 @@ class _PopularCoursesSectionState extends State<PopularCoursesSection> {
           }
           if (snapshot.hasError) {
             return const Text('인기 코스 불러오기 실패',
-                style: TextStyle(color: Colors.red));
+                style: TextStyle(color: AppColors.grey));
           }
           final courses = snapshot.data?.data ?? [];
           if (courses.isEmpty) {

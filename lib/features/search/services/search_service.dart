@@ -7,9 +7,11 @@ class SearchService {
   /// 최근 검색어 불러오기
   Future<List<String>> getRecentKeywords() async {
     final response = await _dio.get('/search/recent');
+    print('[getRecentKeywords] response: ${response.data}');
     if (response.data != null && response.data['isSuccess'] == true) {
       final data = response.data['data'] as List<dynamic>?;
       if (data != null) {
+        print('[getRecentKeywords] keywords: $data');
         return data.map((e) => e['keyword'] as String).toList();
       }
     }

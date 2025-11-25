@@ -1,7 +1,9 @@
+import 'package:plogo/features/search/screens/search_course_list_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:plogo/features/search/providers/search_provider.dart';
 import 'package:plogo/features/search/services/search_service.dart';
+import 'package:plogo/features/search/screens/search_screen.dart';
 import 'package:plogo/core/api/api_client.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'package:go_router/go_router.dart';
@@ -19,13 +21,6 @@ class SearchRecentSection extends StatefulWidget {
 }
 
 class _SearchRecentSectionState extends State<SearchRecentSection> {
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final ref = ProviderScope.containerOf(context, listen: false);
-    ref.refresh(recentCoursesProvider);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Consumer(
@@ -56,17 +51,12 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
                     }
                   },
                   onTap: (keyword) {
-                    if (widget.searchController != null &&
-                        widget.focusNode != null) {
-                      widget.searchController!.text = keyword;
-                      widget.focusNode!.unfocus();
-                      ref.read(searchQueryProvider.notifier).state = keyword;
-                      ref.refresh(recentKeywordsProvider); // 클릭 시 최근검색어 즉시 갱신
-                      ref.refresh(
-                          regionResultsProvider(keyword)); // 클릭 시 시군구 리스트 강제 갱신
-                      ref.refresh(
-                          courseResultsProvider(keyword)); // 클릭 시 코스 조회 강제 갱신
-                    }
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            SearchCourseListScreen(keyword: keyword),
+                      ),
+                    );
                   },
                 ),
                 loading: () => const SizedBox(
@@ -75,7 +65,7 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
                 error: (_, __) => const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24),
                   child: Text('최근 검색어 불러오기 실패',
-                      style: TextStyle(color: Colors.red)),
+                      style: TextStyle(color: AppColors.grey)),
                 ),
               ),
               const SizedBox(height: 32),
@@ -95,7 +85,7 @@ class _SearchRecentSectionState extends State<SearchRecentSection> {
                 error: (_, __) => const Padding(
                   padding: EdgeInsets.symmetric(horizontal: 24),
                   child: Text('최근 확인한 코스 불러오기 실패',
-                      style: TextStyle(color: Colors.red)),
+                      style: TextStyle(color: AppColors.grey)),
                 ),
               ),
               const SizedBox(height: 32),

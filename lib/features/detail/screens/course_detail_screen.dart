@@ -190,23 +190,6 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                             height: 200,
                                             fit: BoxFit.cover,
                                           ),
-                                    Positioned(
-                                      right: 16,
-                                      bottom: 16,
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 8, vertical: 4),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.5),
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        child: Text('1/1',
-                                            style: TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12)),
-                                      ),
-                                    ),
                                   ],
                                 ),
                                 Column(
@@ -260,7 +243,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                                   child: Text(
                                                     detail!.charge.isNotEmpty
                                                         ? detail!.charge
-                                                        : '-',
+                                                        : '프로그램별로 이용 요금 상이',
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         color: AppColors.grey),
@@ -282,7 +265,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                                 SizedBox(width: 8),
                                                 Expanded(
                                                   child: Text(
-                                                    '-',
+                                                    '프로그램별로 이용 시간 상이',
                                                     style: TextStyle(
                                                         fontSize: 12,
                                                         color: AppColors.grey),
@@ -341,7 +324,7 @@ class _CourseDetailScreenState extends State<CourseDetailScreen> {
                                                       detail!.homepage
                                                               .isNotEmpty
                                                           ? detail!.homepage
-                                                          : '-',
+                                                          : '홈페이지 정보가 제공되지 않습니다.',
                                                       style: TextStyle(
                                                         fontSize: 12,
                                                         color: AppColors.grey,
