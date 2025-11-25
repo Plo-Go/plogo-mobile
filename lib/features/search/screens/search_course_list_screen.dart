@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:plogo/features/search/providers/search_provider.dart';
 import 'package:plogo/features/search/screens/search_screen.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
@@ -8,6 +9,7 @@ import 'package:plogo/shared/widgets/course_list_view.dart';
 import 'package:plogo/features/detail/screens/course_detail_screen.dart';
 import 'package:plogo/core/api/api_client.dart';
 import 'package:plogo/features/home/models/course_models.dart';
+import 'package:plogo/features/auth/providers/auth_controller.dart';
 
 class SearchCourseListScreen extends ConsumerStatefulWidget {
   final String keyword;
@@ -36,6 +38,19 @@ class _SearchCourseListScreenState
 
   @override
   Widget build(BuildContext context) {
+    final isLoggedIn = ref.watch(authProvider.select((s) => s.isLoggedIn));
+    if (!isLoggedIn) {
+      // 이미 이동 중이면 추가 이동하지 않음
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted && ModalRoute.of(context)?.isCurrent == true) {
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+          context.go('/login');
+        }
+      });
+      return const SizedBox();
+    }
     return Scaffold(
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(56),

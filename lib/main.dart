@@ -8,6 +8,7 @@ import 'core/api/api_client.dart';
 import 'shared/theme/app_theme.dart';
 import 'features/auth/providers/user_info_provider.dart';
 import 'features/auth/screens/login_screen.dart';
+import 'features/auth/providers/auth_controller.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -31,29 +32,24 @@ void main() async {
   apiClient.init();
 
   runApp(
-    const ProviderScope(
+    ProviderScope(
       child: MyApp(),
     ),
   );
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isLoggedIn = ref.watch(isLoggedInProvider);
-
+  Widget build(BuildContext context) {
     return MaterialApp.router(
+      routerConfig: appRouter,
       title: 'PloGo',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      routerConfig: appRouter,
       builder: (context, child) {
-        if (!isLoggedIn) {
-          // 실제 로그인 화면으로 이동
-          return const LoginScreen();
-        }
+        // 로그아웃 상태면 로그인 화면으로 이동
         return child!;
       },
     );

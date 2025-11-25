@@ -7,8 +7,9 @@ import '../widgets/search_recent_section.dart';
 import '../widgets/search_results_section.dart';
 import 'package:plogo/features/search/screens/search_course_list_screen.dart';
 import 'package:plogo/features/search/providers/search_provider.dart';
-import 'package:plogo/features/search/services/search_service.dart';
 import 'package:plogo/core/api/api_client.dart';
+import 'package:plogo/features/auth/providers/auth_controller.dart';
+import 'package:go_router/go_router.dart';
 
 final isSearchConfirmedProvider = StateProvider<bool>((ref) => false);
 
@@ -21,7 +22,6 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  int _recentSectionKey = DateTime.now().millisecondsSinceEpoch;
   late TextEditingController _searchController;
   late FocusNode _focusNode;
   Timer? _debounceTimer;
@@ -63,6 +63,7 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (context, ref, _) {
+        final isLoggedIn = ref.watch(authProvider.select((s) => s.isLoggedIn));
         final query = ref.watch(searchQueryProvider);
         final isSearchConfirmed = ref.watch(isSearchConfirmedProvider);
         return WillPopScope(
