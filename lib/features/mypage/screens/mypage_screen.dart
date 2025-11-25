@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:plogo/features/log/services/log_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:plogo/features/auth/providers/auth_controller.dart'; // ← 추가
+import 'package:plogo/features/mypage/widgets/confirm_withdraw_dialog.dart';
 
 class MyPageScreen extends ConsumerStatefulWidget {
   const MyPageScreen({super.key});
@@ -203,16 +204,22 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                             color: AppColors.grey),
                       ),
                       onTap: () async {
-                        final service = MyPageService(apiClient.dio);
-                        try {
-                          final response = await service.withdraw();
-                          print(
-                              '[회원탈퇴] 성공: ${response.isSuccess}, code: ${response.code}, message: ${response.message}');
-                        } catch (e) {
-                          print('[회원탈퇴] 실패: $e');
-                        }
-                        await TokenStorage.clearTokens();
-                        context.go('/splash');
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => ConfirmWithdrawDialog(
+                            onConfirm: () async {
+                              final service = MyPageService(apiClient.dio);
+                              try {
+                                final response = await service.withdraw();
+                                print('[회원탈퇴] 성공: ${response.isSuccess}, code: ${response.code}, message: ${response.message}');
+                              } catch (e) {
+                                print('[회원탈퇴] 실패: $e');
+                              }
+                              if (mounted) context.go('/splash');
+                            },
+                          ),
+                        );
                       },
                     ),
                     /* ListTile(
