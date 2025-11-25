@@ -7,6 +7,7 @@ import '../services/token_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/user_info_provider.dart';
 import 'package:plogo/features/home/services/recommend_service.dart';
+import '../providers/auth_controller.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -47,7 +48,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         print('JWT 토큰 저장 완료');
 
         // 로그인 성공 시 인증 상태 Provider true로 변경
-        ref.read(isLoggedInProvider.notifier).state = true;
+        ref.read(authProvider.notifier).login();
+        print('[로그인] isLoggedInProvider: ${ref.read(isLoggedInProvider)}');
+        // authProvider 상태도 출력 (있으면)
+        try {
+          final authState = ref.read(authProvider);
+          print('[로그인] authProvider.state.isLoggedIn: ${authState.isLoggedIn}');
+        } catch (e) {
+          print('[로그인] authProvider 상태 읽기 실패: $e');
+        }
 
         // 5. JWT 토큰으로 유저 정보 조회
         try {

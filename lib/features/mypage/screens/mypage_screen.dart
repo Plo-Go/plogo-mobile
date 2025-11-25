@@ -179,10 +179,12 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                     const SizedBox(height: 6),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      visualDensity: const VisualDensity(horizontal: -2, vertical: -4),
+                      visualDensity:
+                          const VisualDensity(horizontal: -2, vertical: -4),
                       title: const Text(
                         '선호도 재설정',
-                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w400),
                       ),
                       onTap: () {
                         context.go('/onboarding');
@@ -191,7 +193,8 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                     const SizedBox(height: 6),
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      visualDensity: const VisualDensity(horizontal: -2, vertical: -4),
+                      visualDensity:
+                          const VisualDensity(horizontal: -2, vertical: -4),
                       title: const Text(
                         '회원탈퇴',
                         style: TextStyle(
@@ -203,7 +206,8 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                         final service = MyPageService(apiClient.dio);
                         try {
                           final response = await service.withdraw();
-                          print('[회원탈퇴] 성공: ${response.isSuccess}, code: ${response.code}, message: ${response.message}');
+                          print(
+                              '[회원탈퇴] 성공: ${response.isSuccess}, code: ${response.code}, message: ${response.message}');
                         } catch (e) {
                           print('[회원탈퇴] 실패: $e');
                         }
@@ -211,9 +215,10 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                         context.go('/splash');
                       },
                     ),
-                    ListTile(
+                    /* ListTile(
                       contentPadding: EdgeInsets.zero,
-                      visualDensity: const VisualDensity(horizontal: -2, vertical: -4),
+                      visualDensity:
+                          const VisualDensity(horizontal: -2, vertical: -4),
                       title: const Text(
                         '로그아웃',
                         style: TextStyle(
@@ -221,11 +226,11 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                             fontWeight: FontWeight.w400,
                             color: AppColors.grey),
                       ),
-                      onTap: () {
-                        ref.read(authProvider.notifier).logout();
+                      onTap: () async {
+                        await TokenStorage.clearTokens();
                         context.go('/login');
                       },
-                    ),
+                    ), */
                     const SizedBox(height: 12),
                   ],
                 ),

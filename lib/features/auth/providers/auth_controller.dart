@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart'; // ← 추가
+import 'package:flutter/material.dart';
+import 'package:plogo/main.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:plogo/features/auth/services/token_storage.dart';
@@ -21,7 +22,6 @@ class AuthController extends AutoDisposeNotifier<AuthState> {
   @override
   AuthState build() {
     instance = this;
-    // 동기적으로는 false로 초기화
     _checkToken();
     return AuthState(isLoggedIn: false);
   }
@@ -34,18 +34,19 @@ class AuthController extends AutoDisposeNotifier<AuthState> {
   }
 
   void login() => state = state.copyWith(isLoggedIn: true);
-  void logout() => state = state.copyWith(isLoggedIn: false);
+  void logout() {
+    print('[AuthController] 로그아웃 호출');
+    state = state.copyWith(isLoggedIn: false);
+    print('[AuthController] isLoggedIn: ${state.isLoggedIn}');
+    final context = rootNavigatorKey.currentContext;
+    if (context != null) {
+      GoRouter.of(context).go('/login');
+    }
+  }
 }
 
-final authProvider = AutoDisposeNotifierProvider<AuthController, AuthState>(AuthController.new);
-
-// 예시: 로그인 성공 후 온보딩 이동
-void onLoginSuccess(BuildContext context) {
-  // context가 라우팅 트리 내에 있는지 확인 후 이동
-  GoRouter.of(context).go('/onboarding');
-}
-
-// 로그아웃(토큰 만료) 테스트용 함수
-void simulateTokenExpired(WidgetRef ref) {
-  ref.read(authProvider.notifier).logout();
-}
+final authProvider =
+    AutoDisposeNotifierProvider<AuthController, AuthState>(AuthController.new);
+final isLoggedInProvider = Provider<bool>((ref) {
+  return ref.watch(authProvider.select((s) => s.isLoggedIn));
+});

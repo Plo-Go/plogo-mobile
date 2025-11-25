@@ -43,14 +43,18 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: appRouter,
-      title: 'PloGo',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      builder: (context, child) {
-        // 로그아웃 상태면 로그인 화면으로 이동
-        return child!;
+    return Consumer(
+      builder: (context, ref, _) {
+        return MaterialApp.router(
+          routerConfig: ref.watch(appRouterProvider),
+          title: 'PloGo',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          builder: (context, child) {
+            // 로그아웃 상태면 로그인 화면으로 이동
+            return child!;
+          },
+        );
       },
     );
   }
