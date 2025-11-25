@@ -216,7 +216,7 @@ class _MyPageScreenState extends ConsumerState<MyPageScreen> {
                               } catch (e) {
                                 print('[회원탈퇴] 실패: $e');
                               }
-                              if (mounted) context.go('/splash');
+                              if (mounted) context.go('/login');
                             },
                           ),
                         );
