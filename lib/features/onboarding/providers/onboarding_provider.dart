@@ -4,6 +4,9 @@ import 'package:dio/dio.dart';
 import '../data/models/onboarding_step.dart';
 
 class OnboardingNotifier extends Notifier<List<List<String>>> {
+  void reset() {
+    state = List.generate(steps.length, (_) => []);
+  }
   static final List<OnboardingStep> steps = [
     OnboardingStep(
       stepNumber: '1',

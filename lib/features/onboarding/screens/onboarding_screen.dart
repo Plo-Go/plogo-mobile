@@ -17,6 +17,14 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int currentStep = 0;
 
   @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      ref.read(onboardingProvider.notifier).reset();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final selected = ref.watch(onboardingProvider);
     final step = OnboardingNotifier.steps[currentStep];
