@@ -125,6 +125,22 @@ class _LogScreenState extends State<LogScreen> {
     return markers;
   }
 
+  List<CustomOverlay> get _courseNameOverlays {
+    final overlays = <CustomOverlay>[];
+    for (var course in completedCourses) {
+      final latLng = courseLatLngMap[course.logId] ?? _centerPosition;
+      overlays.add(
+        CustomOverlay(
+          customOverlayId: 'course_name_${course.logId}',
+          latLng: latLng,
+          content: '<div style="font-size:14px; font-weight:bold; white-space:nowrap; letter-spacing:0.5px; color:#222;">${course.name}</div>',
+          yAnchor: 0.5,
+        ),
+      );
+    }
+    return overlays;
+  }
+
   /// 마커 이미지 URL 설정
   Future<void> _loadMarkerImage() async {
     // kakao_map_plugin은 웹 URL만 지원 (Base64 data URI 불가)
@@ -181,6 +197,7 @@ class _LogScreenState extends State<LogScreen> {
               onMapCreated: _onMapCreated,
               center: _centerPosition,
               markers: _markers,
+              customOverlays: _courseNameOverlays,
               onMarkerTap: (String markerId, LatLng latLng, int index) {
                 // 마커 클릭 시, 코스 정보로 모달창 표시
                 final course = completedCourses.firstWhere(
