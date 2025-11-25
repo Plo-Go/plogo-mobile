@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plogo/features/log/services/log_service.dart';
+import 'upload_error_toast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:plogo/shared/theme/app_colors.dart';
 import 'dart:io';
@@ -13,6 +14,24 @@ class CourseRecordModal extends StatefulWidget {
 }
 
 class _CourseRecordModalState extends State<CourseRecordModal> {
+  void _showUploadErrorToast(BuildContext context) {
+    final overlay = Overlay.of(context);
+    if (overlay == null) return;
+    final entry = OverlayEntry(
+      builder: (context) => Positioned.fill(
+        child: IgnorePointer(
+          child: Container(
+            alignment: Alignment.center,
+            child: const UploadErrorToast(),
+          ),
+        ),
+      ),
+    );
+    overlay.insert(entry);
+    Future.delayed(const Duration(seconds: 2), () {
+      entry.remove();
+    });
+  }
   final TextEditingController _recordController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
   List<XFile> _images = [];
@@ -43,13 +62,22 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
     });
   }
 
+  
   Future<void> _updateLog() async {
     final logId = widget.course.logId;
     final logContent = _recordController.text;
     final existingUrls = _existingPhotoUrls;
     final newImages = _images;
-    await LogService().updateLog(logId, logContent, existingUrls, newImages);
-    Navigator.of(context).pop();
+    try {
+      final response = await LogService().updateLog(logId, logContent, existingUrls, newImages);
+      if (response == null || response['isSuccess'] != true) {
+        _showUploadErrorToast(context);
+        return;
+      }
+      Navigator.of(context).pop();
+    } catch (e) {
+      _showUploadErrorToast(context);
+    }
   }
 
   Future<void> _pickImages() async {
@@ -120,13 +148,12 @@ class _CourseRecordModalState extends State<CourseRecordModal> {
                         contentPadding:
                             EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                       ),
-                      maxLines: 3,
+                      maxLines: 2,
                     ),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: List.generate(3, (index) {
-                        // 기존 사진 먼저 표시
                         if (index < _existingPhotoUrls.length) {
                           final url = _existingPhotoUrls[index];
                           return Stack(
