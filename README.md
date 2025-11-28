@@ -24,6 +24,17 @@ Flutter 기반 안드로이드 프로젝트 (크로스플랫폼으로 iOS빌드�
 - 카카오 로그인, 토큰 인증, 최근 활동 불러오기
 
 
+## 스크린샷
+
+| 홈 | 지도 | 기록 작성 | 상세페이지 |
+|---|---|---|---|
+| ![Screenshot_20251127_081509](https://github.com/user-attachments/assets/ef26df2d-bb4f-44c7-b413-5578fc37ab19) | ![Screenshot_20251127_081505](https://github.com/user-attachments/assets/758e29b7-4eca-404b-b0e4-68164e3e2517) | ![Screenshot_20251128_175209](https://github.com/user-attachments/assets/18dbb58a-3df8-4d06-b8ec-cd82a44ff237) |  ![Screenshot_20251128_175328](https://github.com/user-attachments/assets/22e0a22a-95f5-4059-9c58-eb6af4495732) |
+
+| 검색 | 지역 선택 | 마이페이지 | 온보딩 |
+|---|---|---|---|
+| ![Screenshot_20251128_181040](https://github.com/user-attachments/assets/f56805d3-dcd1-4c52-8e00-2bf568da0f97) | ![Screenshot_20251128_175340](https://github.com/user-attachments/assets/b10db782-e3f2-47ba-af54-818160571c8b) | ![Screenshot_20251127_081459](https://github.com/user-attachments/assets/47b6ce24-3f1d-4a25-abcc-580e44317c1b)|![Screenshot_20251128_175218](https://github.com/user-attachments/assets/92cca382-2bcd-4d84-bc8a-b0171b7b40c9)|
+
+
 
 ## 🔧 기술 스택
 | 영역                   | 사용 기술                                   |
