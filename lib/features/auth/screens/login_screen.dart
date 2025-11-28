@@ -100,15 +100,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       }
     } catch (error) {
       print('로그인 실패: $error');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('로그인에 실패했습니다. 다시 시도해주세요.\n$error'),
-            backgroundColor: Colors.red,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);

@@ -53,7 +53,7 @@ class _SearchCourseListScreenState
     }
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(56),
+        preferredSize: const Size.fromHeight(75),
         child: GestureDetector(
           onTap: () {
             if (widget.isFromRecent) {
@@ -68,7 +68,7 @@ class _SearchCourseListScreenState
           },
           child: Container(
             color: AppColors.white,
-            padding: const EdgeInsets.fromLTRB(12, 44, 20, 8),
+            padding: const EdgeInsets.fromLTRB(12, 10, 20, 8),
             child: Row(
               children: [
                 IconButton(
@@ -104,16 +104,19 @@ class _SearchCourseListScreenState
                       children: [
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              widget.keyword,
-                              style: const TextStyle(
-                                color: AppColors.black,
-                                fontSize: 16,
-                                fontWeight: FontWeight.w500,
+                          child: Container(
+                            height: 42,
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                widget.keyword,
+                                style: const TextStyle(
+                                  color: AppColors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                         ),
